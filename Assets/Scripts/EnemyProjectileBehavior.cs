@@ -8,7 +8,7 @@ public class EnemyProjectileBehavior : MonoBehaviour
     public CharacterController controller;
 
     // Constants
-    private const float projectileSpeed = 2.0f;
+    private const float projectileSpeed = 3.0f;
     private const float leftBound = -3.7f;
     private const float rightBound = 3.7f;
     private const float upperBound = 5.2f;
@@ -28,7 +28,7 @@ public class EnemyProjectileBehavior : MonoBehaviour
     void FixedUpdate()
     {
         move = Vector2.zero;
-        move += moveDir * projectileSpeed;
+        move += moveDir.normalized * projectileSpeed;
         controller.Move(move * Time.deltaTime);
         HandleBounds();
     }

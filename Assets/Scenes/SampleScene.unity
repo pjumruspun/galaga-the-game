@@ -209,6 +209,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cc5ed0d7424170b42926d6f8d48de926, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  numberOfRockets: 3
   enemyGroup: {fileID: 538657545}
   blueEnemy: {fileID: 220959723884074493, guid: 2f48b5cf83d5cde429abf903228d166b,
     type: 3}

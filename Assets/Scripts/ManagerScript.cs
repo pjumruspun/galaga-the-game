@@ -6,6 +6,10 @@ using UnityEngine.UI;
 
 public class ManagerScript : MonoBehaviour
 {
+    // Adjustable Number of Rockets
+    [SerializeField]
+    private int numberOfRockets = 3;
+
     // Essential components
     public GameObject enemyGroup;
     public GameObject blueEnemy;
@@ -21,7 +25,7 @@ public class ManagerScript : MonoBehaviour
     // Enemy attack rate
     private const float blueEnemyCooldown = 5.0f;
     private float currentBlueEnemyCooldown;
-    private const float redEnemyCooldown = 8.0f;
+    private const float redEnemyCooldown = 3.0f;
     private float currentRedEnemyCooldown;
 
     // Score implementation
@@ -33,6 +37,12 @@ public class ManagerScript : MonoBehaviour
     // New wave of enemy
     private bool isGeneratingNewEnemies;
 
+    // Layer numbers
+    private const int enemyLayer = 8;
+    private const int playerLayer = 9;
+    private const int rocketLayer = 10;
+    private const int playerProjectileLayer = 11;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -42,8 +52,12 @@ public class ManagerScript : MonoBehaviour
         score = 0;
         numberOfEnemies = 0;
         numberOfBlueEnemies = 0;
-        Physics.IgnoreLayerCollision(8, 8); // Ignore collision between enemies
-        Physics.IgnoreLayerCollision(11, 10); // Ignore collision between projectiles and rockets
+
+        Physics.IgnoreLayerCollision(enemyLayer, enemyLayer); // Ignore collision between enemies
+        Physics.IgnoreLayerCollision(playerProjectileLayer, rocketLayer); // Ignore collision between projectiles and rockets
+        Physics.IgnoreLayerCollision(rocketLayer, rocketLayer); // Ignore collision between rockets and rockets
+        Physics.IgnoreLayerCollision(rocketLayer, enemyLayer); // Ignore collision between rockets and enemies
+
         blueEnemies = new List<GameObject>();
         UpdateScore();
         StartCoroutine(GenerateAllEnemy());
@@ -280,5 +294,10 @@ public class ManagerScript : MonoBehaviour
             blueEnemies.Clear();
             StartCoroutine(GenerateAllEnemy());
         }
+    }
+
+    public int GetNumberOfRockets()
+    {
+        return numberOfRockets;
     }
 }

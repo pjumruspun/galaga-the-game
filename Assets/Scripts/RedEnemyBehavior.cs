@@ -5,11 +5,13 @@ using UnityEngine;
 
 public class RedEnemyBehavior : MonoBehaviour
 {
-    // Controllable speed
+    // Adjustable speed
     public float redEnemySpeedMultiplier = 1.0f;
 
     // Essential Components
     private CharacterController controller;
+    private GameObject gameManager;
+    private ManagerScript m;
     public GameObject player;
     public GameObject originalPos;
     public GameObject spawnLocationLeft;
@@ -42,11 +44,14 @@ public class RedEnemyBehavior : MonoBehaviour
     // Shooting Variables
     [SerializeField]
     private GameObject rocket;
+    private const float projectileRotationDegree = 30;
     private const float shootingDistanceY = 1.5f;
 
     // Start is called before the first frame update
     void Start()
     {
+        gameManager = GameObject.Find("Game Manager");
+        m = gameManager.GetComponent<ManagerScript>();
         this.gameObject.tag = "RedEnemy";
         controller = GetComponent<CharacterController>();
         currentState = State.Relocation;
@@ -132,7 +137,7 @@ public class RedEnemyBehavior : MonoBehaviour
         }
         if(diffY <= shootingDistanceY)
         {
-            Shoot();
+            Shoot(m.GetNumberOfRockets());
             currentState = State.Reposition;
         }
         move = Vector3.zero;
@@ -182,12 +187,63 @@ public class RedEnemyBehavior : MonoBehaviour
         }
     }
 
-    private void Shoot()
+    private void Shoot(int n)
     {
-        Vector2 toPlayer = player.transform.position - transform.position;
-        GameObject newRocket = Instantiate(rocket, transform.position, Quaternion.identity);
-        EnemyProjectileBehavior e = newRocket.GetComponent<EnemyProjectileBehavior>();
-        e.ChangeDirection(toPlayer);
+        if (n < 1) n = 1;
+        if (n == 1)
+        {
+            Vector2 toPlayer = player.transform.position - transform.position; // Get Vec2 direction to player
+            GameObject newRocket = Instantiate(rocket, transform.position, Quaternion.identity);
+            EnemyProjectileBehavior e = newRocket.GetComponent<EnemyProjectileBehavior>();
+            e.ChangeDirection(toPlayer);
+        }
+        else
+        {
+            if(n % 2 == 0)
+            {
+                for(int i = 0; i < n/2; ++i)
+                {
+                    
+                    Vector2 toPlayer = player.transform.position - transform.position; // Get Vec2 direction to player
+                    GameObject newRocket1 = Instantiate(rocket, transform.position, Quaternion.identity);
+                    EnemyProjectileBehavior e1 = newRocket1.GetComponent<EnemyProjectileBehavior>();
+                    GameObject newRocket2 = Instantiate(rocket, transform.position, Quaternion.identity);
+                    EnemyProjectileBehavior e2 = newRocket2.GetComponent<EnemyProjectileBehavior>();
+                    float rotationDeg = ((float)i + 0.5f) * projectileRotationDegree;
+
+                    Vector2 left = Quaternion.AngleAxis(rotationDeg, Vector3.forward) * toPlayer;
+                    Vector2 right = Quaternion.AngleAxis(-rotationDeg, Vector3.forward) * toPlayer;
+
+                    Debug.DrawLine(transform.position, new Vector3(transform.position.x + left.x, transform.position.y + left.y, 0.0f));
+
+                    e1.ChangeDirection(left);
+                    e2.ChangeDirection(right);
+                }
+            }
+            else
+            {
+                Vector2 toPlayer = player.transform.position - transform.position; // Get Vec2 direction to player
+                for (int i = 0; i < n / 2; ++i)
+                {
+                    GameObject newRocket1 = Instantiate(rocket, transform.position, Quaternion.identity);
+                    EnemyProjectileBehavior e1 = newRocket1.GetComponent<EnemyProjectileBehavior>();
+                    GameObject newRocket2 = Instantiate(rocket, transform.position, Quaternion.identity);
+                    EnemyProjectileBehavior e2 = newRocket2.GetComponent<EnemyProjectileBehavior>();
+                    float rotationDeg = ((float)i + 1.0f) * projectileRotationDegree;
+
+                    Vector2 left = Quaternion.AngleAxis(rotationDeg, Vector3.forward) * toPlayer;
+                    Vector2 right = Quaternion.AngleAxis(-rotationDeg, Vector3.forward) * toPlayer;
+
+                    Debug.DrawLine(transform.position, new Vector3(transform.position.x + left.x, transform.position.y + left.y, 0.0f));
+
+                    e1.ChangeDirection(left);
+                    e2.ChangeDirection(right);
+                }
+                GameObject newRocket3 = Instantiate(rocket, transform.position, Quaternion.identity);
+                EnemyProjectileBehavior e3 = newRocket3.GetComponent<EnemyProjectileBehavior>();
+                e3.ChangeDirection(toPlayer);
+            }
+        }
     }
 
     public void ChasePlayer()
