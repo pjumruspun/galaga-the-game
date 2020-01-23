@@ -18,15 +18,33 @@ public class CollisionHandler : MonoBehaviour
 
     private void OnControllerColliderHit(ControllerColliderHit hit)
     {
-        if(hit.gameObject.tag == "Player" && gameObject.tag == "Enemy")
+        if(hit.gameObject.tag == "Player" && (gameObject.tag == "Enemy" || gameObject.tag == "RedEnemy" || gameObject.tag == "Rocket"))
         {
             if(!playerLife.GetInvulnerableStatus())
             {
-                playerLife.Respawn();
-                Destroy(transform.parent.gameObject);
-                Destroy(hit.gameObject);
-                m.EnemyCountDecrement();
-                m.BlueEnemyDestroyed(false);
+                if(gameObject.tag == "Enemy")
+                {
+                    playerLife.Respawn();
+                    Destroy(transform.parent.gameObject);
+                    Destroy(hit.gameObject);
+                    m.EnemyCountDecrement();
+                    m.BlueEnemyDestroyed(false);
+                }
+                else if(gameObject.tag == "RedEnemy")
+                {
+                    playerLife.Respawn();
+                    Destroy(transform.parent.gameObject);
+                    Destroy(hit.gameObject);
+                    m.EnemyCountDecrement();
+                    m.RedEnemyDestroyed(false);
+                }
+                else if(gameObject.tag == "Rocket")
+                {
+                    Debug.Log("Got shot");
+                    playerLife.Respawn();
+                    Destroy(gameObject);
+                    Destroy(hit.gameObject);
+                }
             }
         }
         else
@@ -48,7 +66,14 @@ public class CollisionHandler : MonoBehaviour
                     m.EnemyCountDecrement();
                     m.BlueEnemyDestroyed(true);
                 }
-                
+                else if (hit.gameObject.tag == "RedEnemy" && gameObject.tag == "Projectile")
+                {
+                    Destroy(hit.transform.parent.gameObject);
+                    Destroy(gameObject);
+                    m.EnemyCountDecrement();
+                    m.RedEnemyDestroyed(true);
+                }
+
             }
         }
     }

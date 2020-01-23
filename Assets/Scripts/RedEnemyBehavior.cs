@@ -3,10 +3,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BlueEnemyBehavior : MonoBehaviour
+public class RedEnemyBehavior : MonoBehaviour
 {
     // Controllable speed
-    public float blueEnemySpeedMultiplier = 1.0f;
+    public float redEnemySpeedMultiplier = 1.0f;
 
     // Essential Components
     private CharacterController controller;
@@ -35,14 +35,19 @@ public class BlueEnemyBehavior : MonoBehaviour
     }
     State currentState;
 
-    // Checking Variable
+    // Checking Variables
     private const int ensureRelocation = 60;
     private int relocationCounter = 0;
+
+    // Shooting Variables
+    [SerializeField]
+    private GameObject rocket;
+    private const float shootingDistanceY = 1.5f;
 
     // Start is called before the first frame update
     void Start()
     {
-        this.gameObject.tag = "Enemy";
+        this.gameObject.tag = "RedEnemy";
         controller = GetComponent<CharacterController>();
         currentState = State.Relocation;
         player = GameObject.FindGameObjectWithTag("Player");
@@ -85,7 +90,7 @@ public class BlueEnemyBehavior : MonoBehaviour
             ResetRotation();
             int randDir = UnityEngine.Random.Range(0, 2);
             float dist = 999.0f;
-            if(randDir < 1)
+            if (randDir < 1)
             {
                 transform.position = spawnLocationLeft.transform.position;
                 dist = Vector3.Distance(spawnLocationLeft.transform.position, transform.position);
@@ -95,7 +100,7 @@ public class BlueEnemyBehavior : MonoBehaviour
                 transform.position = spawnLocationRight.transform.position;
                 dist = Vector3.Distance(spawnLocationRight.transform.position, transform.position);
             }
-            
+
             if (dist < 0.05f)
                 ++relocationCounter;
             if (relocationCounter == ensureRelocation)
@@ -108,31 +113,38 @@ public class BlueEnemyBehavior : MonoBehaviour
 
     private void FlyToPlayer()
     {
-        
+
         float curX = gameObject.transform.position.x;
         float playerX = 0.0f;
+        float diffY = 999.0f;
         try
         {
             playerX = player.transform.position.x;
+            diffY = Mathf.Abs(player.transform.position.y - transform.position.y);
         }
         catch (MissingReferenceException)
         {
-            player = GameObject.FindGameObjectWithTag("Player");  
+            player = GameObject.FindGameObjectWithTag("Player");
         }
         catch (NullReferenceException)
         {
             playerX = 0.0f;
         }
+        if(diffY <= shootingDistanceY)
+        {
+            Shoot();
+            currentState = State.Reposition;
+        }
         move = Vector3.zero;
         float randomSpeedFactor = UnityEngine.Random.Range(0.9f, 1.1f);
-        move += Vector3.down * verticalSpeed * blueEnemySpeedMultiplier * randomSpeedFactor;
+        move += Vector3.down * verticalSpeed * redEnemySpeedMultiplier * randomSpeedFactor;
         if (playerX < curX) // Player is on left side of the enemy (from player's perspective)
         {
-            move += Vector3.left * horizontalSpeed * blueEnemySpeedMultiplier * randomSpeedFactor; // Chase the player on LHS
+            move += Vector3.left * horizontalSpeed * redEnemySpeedMultiplier * randomSpeedFactor; // Chase the player on LHS
         }
         else if (playerX > curX) // Player is on right side of the enemy (from player's perspective)
         {
-            move += Vector3.right * horizontalSpeed * blueEnemySpeedMultiplier * randomSpeedFactor; // Chase the player on RHS
+            move += Vector3.right * horizontalSpeed * redEnemySpeedMultiplier * randomSpeedFactor; // Chase the player on RHS
         }
         try
         {
@@ -151,8 +163,8 @@ public class BlueEnemyBehavior : MonoBehaviour
         transform.up = diff;
         move = Vector3.zero;
         move = Vector3.Normalize(diff);
-        Debug.DrawLine(gameObject.transform.position, originalPos.transform.position);
-        controller.Move(move * Time.deltaTime * repositionSpeed * blueEnemySpeedMultiplier);
+        Debug.DrawLine(transform.position, originalPos.transform.position);
+        controller.Move(move * Time.deltaTime * repositionSpeed * redEnemySpeedMultiplier);
     }
 
     private bool IsRepositioned()
@@ -168,6 +180,14 @@ public class BlueEnemyBehavior : MonoBehaviour
         {
             currentState = State.Relocation;
         }
+    }
+
+    private void Shoot()
+    {
+        Vector2 toPlayer = player.transform.position - transform.position;
+        GameObject newRocket = Instantiate(rocket, transform.position, Quaternion.identity);
+        EnemyProjectileBehavior e = newRocket.GetComponent<EnemyProjectileBehavior>();
+        e.ChangeDirection(toPlayer);
     }
 
     public void ChasePlayer()

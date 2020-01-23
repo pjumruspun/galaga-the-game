@@ -29,14 +29,16 @@ public class PlayerLife : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        UpdateLives();
+        UpdateLivesUI();
         if (isInvulnerable)
         {
-            Physics.IgnoreLayerCollision(8, 9, true);
+            Physics.IgnoreLayerCollision(8, 9, true); // Temporarily ignore collision between player and enemy
+            Physics.IgnoreLayerCollision(10, 9, true); // Player and rocket
             currentInvulTime += Time.deltaTime;
             if (currentInvulTime > invulnerableTime)
             {
                 Physics.IgnoreLayerCollision(8, 9, false);
+                Physics.IgnoreLayerCollision(10, 9, false);
                 isInvulnerable = false;
                 currentInvulTime = 0.0f;
             }
@@ -47,11 +49,11 @@ public class PlayerLife : MonoBehaviour
     {
         SetInvulnerable();
         --lives;
-        UpdateLives();
+        UpdateLivesUI();
         if (lives > 0)
         {
             GameObject newLife = Instantiate(player, respawnLocation, Quaternion.identity);
-            SpriteRenderer s = newLife.GetComponent<SpriteRenderer>();
+            SpriteRenderer s = newLife.GetComponentInChildren<SpriteRenderer>();
             s.sortingOrder = 2;
         }
         else
@@ -75,7 +77,7 @@ public class PlayerLife : MonoBehaviour
         return isInvulnerable;
     }
 
-    private void UpdateLives()
+    private void UpdateLivesUI() // Update the UI
     {
         string livesStr = "Lives: " + lives.ToString();
         livesText.text = livesStr;

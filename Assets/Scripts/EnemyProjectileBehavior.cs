@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ProjectileBehavior : MonoBehaviour
+public class EnemyProjectileBehavior : MonoBehaviour
 {
     // Essential Components
     public CharacterController controller;
 
     // Constants
-    private const float projectileSpeed = 10.0f;
+    private const float projectileSpeed = 2.0f;
     private const float leftBound = -3.7f;
     private const float rightBound = 3.7f;
     private const float upperBound = 5.2f;
@@ -16,6 +16,7 @@ public class ProjectileBehavior : MonoBehaviour
 
     // Controlling Variables
     Vector2 move;
+    Vector2 moveDir;
 
     // Start is called before the first frame update
     void Start()
@@ -27,7 +28,7 @@ public class ProjectileBehavior : MonoBehaviour
     void FixedUpdate()
     {
         move = Vector2.zero;
-        move += Vector2.up * projectileSpeed;
+        move += moveDir * projectileSpeed;
         controller.Move(move * Time.deltaTime);
         HandleBounds();
     }
@@ -37,5 +38,11 @@ public class ProjectileBehavior : MonoBehaviour
         Vector2 currentPosition = gameObject.transform.position;
         if (currentPosition.x < leftBound || currentPosition.x > rightBound || currentPosition.y > upperBound || currentPosition.y < lowerBound)
             Destroy(gameObject);
+    }
+
+    public void ChangeDirection(Vector2 dir)
+    {
+        transform.up = dir;
+        moveDir = dir;
     }
 }
