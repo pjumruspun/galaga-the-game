@@ -77,6 +77,7 @@ public class BlueEnemyBehavior : MonoBehaviour
         }
         else if (currentState == State.Relocation)
         {
+            transform.up = Vector3.down;
             transform.position = spawnLocationLeft.transform.position;
             float dist = Vector3.Distance(spawnLocationLeft.transform.position, transform.position);
             if (dist < 0.05f)
@@ -91,6 +92,7 @@ public class BlueEnemyBehavior : MonoBehaviour
 
     private void FlyToPlayer()
     {
+        
         float curX = gameObject.transform.position.x;
         float playerX = 0.0f;
         try
@@ -116,6 +118,7 @@ public class BlueEnemyBehavior : MonoBehaviour
         {
             move += Vector3.right * horizontalSpeed * blueEnemySpeedMultiplier * randomSpeedFactor; // Chase the player on RHS
         }
+        LookAtPlayer();
         controller.Move(move * Time.deltaTime);
     }
 
@@ -145,5 +148,10 @@ public class BlueEnemyBehavior : MonoBehaviour
     public void ChasePlayer()
     {
         currentState = State.Chase;
+    }
+
+    public void LookAtPlayer()
+    {
+        transform.up = player.transform.position - transform.position;
     }
 }
