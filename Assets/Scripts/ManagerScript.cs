@@ -248,6 +248,10 @@ public class ManagerScript : MonoBehaviour
                 redEnemies.Remove(red);
                 RedEnemyChasePlayer();
             }
+            catch (NullReferenceException)
+            {
+                Debug.Log("red is null!");
+            }
         }
     }
 
