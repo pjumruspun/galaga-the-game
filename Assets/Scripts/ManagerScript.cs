@@ -46,6 +46,7 @@ public class ManagerScript : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        Time.timeScale = 1;
         isGeneratingNewEnemies = true;
         currentBlueEnemyCooldown = 0.0f;
         currentRedEnemyCooldown = 0.0f;
@@ -59,6 +60,8 @@ public class ManagerScript : MonoBehaviour
         Physics.IgnoreLayerCollision(rocketLayer, enemyLayer); // Ignore collision between rockets and enemies
 
         blueEnemies = new List<GameObject>();
+        redEnemies = new List<GameObject>();
+
         UpdateScore();
         StartCoroutine(GenerateAllEnemy());
     }
@@ -171,9 +174,9 @@ public class ManagerScript : MonoBehaviour
             {
                 blue = blueEnemies[randInt];
             }
-            catch (ArgumentOutOfRangeException e)
+            catch (ArgumentOutOfRangeException)
             {
-                Debug.Log(e.ToString());
+                Debug.Log("Weird index but okay");
                 if (numberOfEnemies == 0)
                 {
                     StartCoroutine(GenerateAllEnemy());
@@ -291,22 +294,65 @@ public class ManagerScript : MonoBehaviour
     {
         if (numberOfEnemies <= 0 && !isGeneratingNewEnemies)
         {
-            foreach (GameObject b in blueEnemies)
-            {
-                Destroy(b);
-            }
-            blueEnemies.Clear();
-            foreach (GameObject r in redEnemies)
-            {
-                Destroy(r);
-            }
-            redEnemies.Clear();
+            ClearAll(blueEnemies);
+            ClearAll(redEnemies);
+            
             StartCoroutine(GenerateAllEnemy());
         }
+    }
+
+    private void ClearAll(List<GameObject> aList)
+    {
+        foreach (GameObject r in aList)
+        {
+            Destroy(r);
+        }
+       aList.Clear();
     }
 
     public int GetNumberOfRockets()
     {
         return numberOfRockets;
+    }
+
+    public void RestartGame()
+    {
+        Time.timeScale = 1;
+
+        ClearAll(blueEnemies);
+        ClearAll(redEnemies);
+        ClearAllProjectilesAndRockets();
+
+        isGeneratingNewEnemies = true;
+        currentBlueEnemyCooldown = 0.0f;
+        currentRedEnemyCooldown = 0.0f;
+        score = 0;
+        numberOfEnemies = 0;
+        numberOfBlueEnemies = 0;
+
+        Physics.IgnoreLayerCollision(enemyLayer, enemyLayer); // Ignore collision between enemies
+        Physics.IgnoreLayerCollision(playerProjectileLayer, rocketLayer); // Ignore collision between projectiles and rockets
+        Physics.IgnoreLayerCollision(rocketLayer, rocketLayer); // Ignore collision between rockets and rockets
+        Physics.IgnoreLayerCollision(rocketLayer, enemyLayer); // Ignore collision between rockets and enemies
+
+        blueEnemies = new List<GameObject>();
+        redEnemies = new List<GameObject>();
+
+        UpdateScore();
+        StartCoroutine(GenerateAllEnemy());
+    }
+
+    private void ClearAllProjectilesAndRockets()
+    {
+        GameObject[] projs = GameObject.FindGameObjectsWithTag("Projectile");
+        GameObject[] rockets = GameObject.FindGameObjectsWithTag("Rocket");
+        foreach(GameObject g in projs)
+        {
+            Destroy(g);
+        }
+        foreach (GameObject g in rockets)
+        {
+            Destroy(g);
+        }
     }
 }

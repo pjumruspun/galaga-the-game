@@ -8,9 +8,12 @@ public class PlayerLife : MonoBehaviour
     // Essential components
     public GameObject player;
     public GameObject currentPlayerObj;
+    public ManagerScript managerScript;
 
     // Lives Implementation
-    public int lives = 3;
+    [SerializeField]
+    private int lives = 2;
+    private int currentLives;
     public Text livesText;
 
     // Respawn Location
@@ -25,15 +28,21 @@ public class PlayerLife : MonoBehaviour
     private int invulFrameCount;
     private const int numberOfFramesToToggle = 9;
 
+    // Handle Game Over status
+    private bool isGameOver;
+
     // Start is called before the first frame update
     void Start()
     {
+        currentLives = lives;
+        managerScript = GameObject.Find("Game Manager").GetComponent<ManagerScript>();
         isInvulnerable = false;
         currentPlayerObj = GameObject.FindGameObjectWithTag("Player");
         r = currentPlayerObj.GetComponentInChildren<SpriteRenderer>();
         r.enabled = true;
         isRendererActive = true;
         invulFrameCount = 0;
+        isGameOver = false;
     }
 
     // Update is called once per frame
@@ -43,8 +52,11 @@ public class PlayerLife : MonoBehaviour
         if (isInvulnerable)
         {
             isRendererActive = !isRendererActive;
-            if(invulFrameCount % numberOfFramesToToggle == 0)
-                r.enabled = isRendererActive;
+            if(invulFrameCount % numberOfFramesToToggle == 0 && r != null)
+            {
+                r.enabled = isRendererActive; 
+            }
+                
             Physics.IgnoreLayerCollision(8, 9, true); // Temporarily ignore collision between player and enemy
             Physics.IgnoreLayerCollision(10, 9, true); // Player and rocket
             currentInvulTime += Time.deltaTime;
@@ -60,22 +72,40 @@ public class PlayerLife : MonoBehaviour
             }
             ++invulFrameCount;
         }
+
+        if(Input.GetKeyDown(KeyCode.Space) && isGameOver)
+        {
+            CreatePlayerObj();
+            currentLives = lives;
+            managerScript.RestartGame();
+
+            r.enabled = true;
+            isRendererActive = true;
+            invulFrameCount = 0;
+            Physics.IgnoreLayerCollision(8, 9, false);
+            Physics.IgnoreLayerCollision(10, 9, false);
+            isInvulnerable = false;
+            currentInvulTime = 0.0f;
+
+            isGameOver = false;
+        }
     }
 
     public void Respawn()
     {
         SetInvulnerable();
-        --lives;
+        --currentLives;
         UpdateLivesUI();
-        if (lives > 0)
+        if (currentLives > 0)
         {
-            currentPlayerObj = Instantiate(player, respawnLocation, Quaternion.identity);
-            r = currentPlayerObj.GetComponentInChildren<SpriteRenderer>();
+            CreatePlayerObj();
             //s.sortingOrder = 2;
         }
         else
         {
+            isGameOver = true;
             GameOver();
+            Time.timeScale = 0;
         }
     }
 
@@ -96,7 +126,13 @@ public class PlayerLife : MonoBehaviour
 
     private void UpdateLivesUI() // Update the UI
     {
-        string livesStr = "Lives: " + lives.ToString();
+        string livesStr = "Lives: " + currentLives.ToString();
         livesText.text = livesStr;
+    }
+
+    private void CreatePlayerObj()
+    {
+        currentPlayerObj = Instantiate(player, respawnLocation, Quaternion.identity);
+        r = currentPlayerObj.GetComponentInChildren<SpriteRenderer>();
     }
 }
