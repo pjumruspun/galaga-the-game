@@ -23,9 +23,9 @@ public class ManagerScript : MonoBehaviour
     public int numberOfRedEnemies;
 
     // Enemy attack rate
-    private const float blueEnemyCooldown = 5.0f;
+    private const float blueEnemyCooldown = 3.0f;
     private float currentBlueEnemyCooldown;
-    private const float redEnemyCooldown = 3.0f;
+    private const float redEnemyCooldown = 5.0f;
     private float currentRedEnemyCooldown;
 
     // Score implementation
@@ -196,7 +196,7 @@ public class ManagerScript : MonoBehaviour
             }
             catch (MissingReferenceException e)
             {
-                Debug.Log(e.ToString());
+                Debug.Log("Blue missing Reference! I'm trying to do recursion while delete the missing obj");
                 blueEnemies.Remove(blue);
                 BlueEnemyChasePlayer();
             }
@@ -244,7 +244,7 @@ public class ManagerScript : MonoBehaviour
             }
             catch (MissingReferenceException e)
             {
-                Debug.Log(e.ToString());
+                Debug.Log("Red missing Reference! I'm trying to do recursion while delete the missing obj");
                 redEnemies.Remove(red);
                 RedEnemyChasePlayer();
             }
@@ -296,6 +296,11 @@ public class ManagerScript : MonoBehaviour
                 Destroy(b);
             }
             blueEnemies.Clear();
+            foreach (GameObject r in redEnemies)
+            {
+                Destroy(r);
+            }
+            redEnemies.Clear();
             StartCoroutine(GenerateAllEnemy());
         }
     }
