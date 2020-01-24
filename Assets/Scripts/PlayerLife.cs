@@ -14,10 +14,13 @@ public class PlayerLife : MonoBehaviour
     [SerializeField]
     private int lives = 2;
     private int currentLives;
-    public Text livesText;
-
+    
     // Respawn Location
     private Vector3 respawnLocation = new Vector3(0.0f, -4.0f, 0.0f);
+
+    // UI implementation
+    private Text livesText;
+    private Text gameOverText;
 
     // Invulnerable Variables
     private bool isInvulnerable;
@@ -43,6 +46,11 @@ public class PlayerLife : MonoBehaviour
         isRendererActive = true;
         invulFrameCount = 0;
         isGameOver = false;
+
+        livesText = GameObject.FindGameObjectWithTag("LivesText").GetComponent<Text>();
+        gameOverText = GameObject.FindGameObjectWithTag("GameOverText").GetComponent<Text>();
+
+        gameOverText.enabled = false;
     }
 
     // Update is called once per frame
@@ -75,6 +83,7 @@ public class PlayerLife : MonoBehaviour
 
         if(Input.GetKeyDown(KeyCode.Space) && isGameOver)
         {
+            Debug.Log("Restarting game");
             CreatePlayerObj();
             currentLives = lives;
             managerScript.RestartGame();
@@ -88,6 +97,7 @@ public class PlayerLife : MonoBehaviour
             currentInvulTime = 0.0f;
 
             isGameOver = false;
+            gameOverText.enabled = false;
         }
     }
 
@@ -112,6 +122,7 @@ public class PlayerLife : MonoBehaviour
     void GameOver()
     {
         Debug.Log("GAME OVER!!");
+        gameOverText.enabled = true;
     }
 
     public void SetInvulnerable()

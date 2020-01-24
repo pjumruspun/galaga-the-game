@@ -46,24 +46,7 @@ public class ManagerScript : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        Time.timeScale = 1;
-        isGeneratingNewEnemies = true;
-        currentBlueEnemyCooldown = 0.0f;
-        currentRedEnemyCooldown = 0.0f;
-        score = 0;
-        numberOfEnemies = 0;
-        numberOfBlueEnemies = 0;
-
-        Physics.IgnoreLayerCollision(enemyLayer, enemyLayer); // Ignore collision between enemies
-        Physics.IgnoreLayerCollision(playerProjectileLayer, rocketLayer); // Ignore collision between projectiles and rockets
-        Physics.IgnoreLayerCollision(rocketLayer, rocketLayer); // Ignore collision between rockets and rockets
-        Physics.IgnoreLayerCollision(rocketLayer, enemyLayer); // Ignore collision between rockets and enemies
-
-        blueEnemies = new List<GameObject>();
-        redEnemies = new List<GameObject>();
-
-        UpdateScore();
-        StartCoroutine(GenerateAllEnemy());
+        InitializeGame();
     }
 
     // Update is called once per frame
@@ -323,6 +306,26 @@ public class ManagerScript : MonoBehaviour
         ClearAll(redEnemies);
         ClearAllProjectilesAndRockets();
 
+        InitializeGame();
+    }
+
+    private void ClearAllProjectilesAndRockets()
+    {
+        GameObject[] projs = GameObject.FindGameObjectsWithTag("Projectile");
+        GameObject[] rockets = GameObject.FindGameObjectsWithTag("Rocket");
+        foreach(GameObject g in projs)
+        {
+            Destroy(g);
+        }
+        foreach (GameObject g in rockets)
+        {
+            Destroy(g);
+        }
+    }
+
+    private void InitializeGame()
+    {
+        Time.timeScale = 1;
         isGeneratingNewEnemies = true;
         currentBlueEnemyCooldown = 0.0f;
         currentRedEnemyCooldown = 0.0f;
@@ -340,19 +343,5 @@ public class ManagerScript : MonoBehaviour
 
         UpdateScore();
         StartCoroutine(GenerateAllEnemy());
-    }
-
-    private void ClearAllProjectilesAndRockets()
-    {
-        GameObject[] projs = GameObject.FindGameObjectsWithTag("Projectile");
-        GameObject[] rockets = GameObject.FindGameObjectsWithTag("Rocket");
-        foreach(GameObject g in projs)
-        {
-            Destroy(g);
-        }
-        foreach (GameObject g in rockets)
-        {
-            Destroy(g);
-        }
     }
 }

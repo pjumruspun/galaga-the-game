@@ -5,7 +5,7 @@ using UnityEngine;
 public class ProjectileBehavior : MonoBehaviour
 {
     // Essential Components
-    public CharacterController controller;
+    private CharacterController controller;
 
     // Constants
     private const float projectileSpeed = 10.0f;

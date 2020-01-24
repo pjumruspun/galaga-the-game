@@ -5,9 +5,9 @@ using UnityEngine;
 public class CollisionHandler : MonoBehaviour
 {
     // Essential components
-    PlayerLife playerLife;
-    GameObject gameManager;
-    ManagerScript m;
+    private PlayerLife playerLife;
+    private GameObject gameManager;
+    private ManagerScript m;
 
     private void Start()
     {

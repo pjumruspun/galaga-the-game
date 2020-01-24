@@ -8,6 +8,11 @@ TagManager:
   - Enemy
   - Projectile
   - Rocket
+  - LivesText
+  - ScoreText
+  - GameManager
+  - EnemyGroup
+  - GameOverText
   layers:
   - Default
   - TransparentFX
