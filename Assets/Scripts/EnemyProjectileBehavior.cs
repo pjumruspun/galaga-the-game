@@ -29,7 +29,8 @@ public class EnemyProjectileBehavior : MonoBehaviour
     {
         move = Vector2.zero;
         move += moveDir.normalized * projectileSpeed;
-        controller.Move(move * Time.deltaTime);
+        if (controller != null)
+            controller.Move(move * Time.deltaTime);
         HandleBounds();
     }
 

@@ -17,20 +17,24 @@ public class ManagerScript : MonoBehaviour
     public GameObject greenEnemy;
 
     // Enemy containers
+    [SerializeField]
     private List<GameObject> blueEnemies;
+    [SerializeField]
     private List<GameObject> redEnemies;
+    [SerializeField]
     private List<GameObject> greenEnemies;
+    private GameObject[] realGreenEnemyObjs;
     private int numberOfEnemies;
     private int numberOfBlueEnemies;
     private int numberOfRedEnemies;
     private int numberOfGreenEnemies;
 
     // Enemy attack rate
-    private const float blueEnemyCooldown = 3.0f;
+    private const float blueEnemyCooldown = 9.0f;
     private float currentBlueEnemyCooldown;
-    private const float redEnemyCooldown = 5.0f;
+    private const float redEnemyCooldown = 12.0f;
     private float currentRedEnemyCooldown;
-    private const float greenEnemyCooldown = 5.0f;
+    private const float greenEnemyCooldown = 4.0f;
     private float currentGreenEnemyCooldown;
 
     // Score implementation
@@ -116,7 +120,9 @@ public class ManagerScript : MonoBehaviour
         SortBlueEnemyRenderer();
         SortRedEnemyRenderer();
         SortGreenEnemyRenderer();
-        
+
+        realGreenEnemyObjs = GameObject.FindGameObjectsWithTag("GreenEnemy");
+
         isGeneratingNewEnemies = false;
         // enemyGroup.transform.position = Vector3.zero;
     }
@@ -375,7 +381,6 @@ public class ManagerScript : MonoBehaviour
             DestroyAll(blueEnemies);
             DestroyAll(redEnemies);
             DestroyAll(greenEnemies);
-
             StartCoroutine(GenerateAllEnemy());
         }
     }
@@ -402,6 +407,11 @@ public class ManagerScript : MonoBehaviour
         DestroyAll(redEnemies);
         DestroyAll(greenEnemies);
         ClearAllProjectilesAndRockets();
+
+        foreach(GameObject g in realGreenEnemyObjs)
+        {
+            Destroy(g);
+        }
 
         InitializeGame();
     }
@@ -444,7 +454,7 @@ public class ManagerScript : MonoBehaviour
         blueEnemies = new List<GameObject>();
         redEnemies = new List<GameObject>();
         greenEnemies = new List<GameObject>();
-
+        
         UpdateScore();
         StartCoroutine(GenerateAllEnemy());
 

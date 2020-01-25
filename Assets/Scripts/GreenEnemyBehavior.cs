@@ -19,13 +19,14 @@ public class GreenEnemyBehavior : MonoBehaviour
 
     // Constants
     private const float repositionSpeed = 5.0f;
-    private const float verticalSpeed = 3.0f;
+    private const float verticalSpeed = 5.0f;
     private const float horizontalSpeed = 1.2f;
     private const float leftBound = -3.7f;
     private const float rightBound = 3.7f;
     private const float upperBound = 5.2f;
     private const float lowerBound = -6f;
     private const float repositionDistance = 0.05f;
+    private const float laserPosAdjustFactor = 3.1f;
 
     // Controlling Variables
     Vector3 move;
@@ -44,14 +45,26 @@ public class GreenEnemyBehavior : MonoBehaviour
     // Shooting Variables
     [SerializeField]
     private GameObject rocket;
-    private const float projectileRotationDegree = 30;
-    private const float shootingDistanceY = 1.5f;
-    private const float laserTime = 2.0f;
+    [SerializeField]
+    private GameObject laser;
+    private GameObject currentLaserObj;
+    private const float shootingDistanceY = 2.0f;
+    private const float timeBeforeShooting = 0.5f;
+    private const float timeAfterShooting = 0.5f;
+    private const float laserTime = 3.0f;
     private float currentLaserTime;
+    private bool isShootingLaser;
+    private const float shootingHorizontalSpeed = 0.4f;
+    private bool isLaserRendererEnabled;
+    private int currentLaserFrameCount;
+    private const int numberOfFramesToToggle = 5;
 
     // Start is called before the first frame update
     void Start()
     {
+        currentLaserFrameCount = 0;
+        isLaserRendererEnabled = true;
+        isShootingLaser = false;
         currentLaserTime = 0.0f;
         gameManager = GameObject.Find("Game Manager");
         m = gameManager.GetComponent<ManagerScript>();
@@ -120,13 +133,70 @@ public class GreenEnemyBehavior : MonoBehaviour
         else if (currentState == State.Shooting)
         {
             ResetRotation();
-            if(currentLaserTime < laserTime)
+            if(currentLaserTime < laserTime + timeAfterShooting)
             {
-                Debug.Log("SHOOOOOT");
-                // TO DO: Implement shooting
+                transform.parent = null;
+                float curX = gameObject.transform.position.x;
+                float playerX = 0.0f;
+                try
+                {
+                    playerX = player.transform.position.x;
+                }
+                catch (MissingReferenceException)
+                {
+                    player = GameObject.FindGameObjectWithTag("Player");
+                }
+                catch (NullReferenceException)
+                {
+                    playerX = 0.0f;
+                }
+                move = Vector3.zero;
+                float randomSpeedFactor = UnityEngine.Random.Range(0.9f, 1.1f);
+                if (playerX < curX) // Player is on left side of the enemy (from player's perspective)
+                {
+                    move += Vector3.left * shootingHorizontalSpeed * greenEnemySpeedMultiplier * randomSpeedFactor; // Chase the player on LHS
+                }
+                else if (playerX > curX) // Player is on right side of the enemy (from player's perspective)
+                {
+                    move += Vector3.right * shootingHorizontalSpeed * greenEnemySpeedMultiplier * randomSpeedFactor; // Chase the player on RHS
+                }
+
+                if(currentLaserTime > timeBeforeShooting && !isShootingLaser && currentLaserTime < laserTime)
+                {
+                    isShootingLaser = true;
+                    Shoot(1);
+                    isLaserRendererEnabled = true;
+                    currentLaserObj = Instantiate(laser, transform.position + Vector3.down * laserPosAdjustFactor, Quaternion.identity);
+                    currentLaserObj.transform.parent = transform;
+                }
+                if(currentLaserTime > laserTime && isShootingLaser)
+                {
+                    isShootingLaser = false;
+                    Destroy(currentLaserObj);
+                    currentLaserFrameCount = 0;
+                }
+
+                if (currentLaserObj != null)
+                {
+                    // Debug.Log("Shooting");
+                    CharacterController laserController = currentLaserObj.GetComponent<CharacterController>();
+                    isLaserRendererEnabled = !isLaserRendererEnabled;
+                    SpriteRenderer s = currentLaserObj.GetComponentInChildren<SpriteRenderer>();
+                    if(currentLaserFrameCount % numberOfFramesToToggle == 0)
+                    {
+                        Shoot(1);
+                        s.enabled = isLaserRendererEnabled;
+                    }
+                        
+                    ++currentLaserFrameCount;
+                    laserController.Move(move * Time.deltaTime);
+                }
+
+                controller.Move(move * Time.deltaTime);
             }
             else
             {
+                transform.parent = originalPos.transform;
                 currentLaserTime = 0.0f;
                 currentState = State.Reposition;
             }
@@ -155,7 +225,6 @@ public class GreenEnemyBehavior : MonoBehaviour
         }
         if (diffY <= shootingDistanceY)
         {
-            Shoot(m.GetNumberOfRockets());
             currentState = State.Shooting;
         }
         move = Vector3.zero;
@@ -210,57 +279,14 @@ public class GreenEnemyBehavior : MonoBehaviour
         if (n < 1) n = 1;
         if (n == 1)
         {
-            Vector2 toPlayer = player.transform.position - transform.position; // Get Vec2 direction to player
-            GameObject newRocket = Instantiate(rocket, transform.position, Quaternion.identity);
+            GameObject newRocket = Instantiate(rocket, transform.position + Vector3.down * 1.2f, Quaternion.identity);
             EnemyProjectileBehavior e = newRocket.GetComponent<EnemyProjectileBehavior>();
-            e.ChangeDirection(toPlayer);
-        }
-        else
-        {
-            if (n % 2 == 0)
+            foreach (Transform child in newRocket.transform)
             {
-                for (int i = 0; i < n / 2; ++i)
-                {
-
-                    Vector2 toPlayer = player.transform.position - transform.position; // Get Vec2 direction to player
-                    GameObject newRocket1 = Instantiate(rocket, transform.position, Quaternion.identity);
-                    EnemyProjectileBehavior e1 = newRocket1.GetComponent<EnemyProjectileBehavior>();
-                    GameObject newRocket2 = Instantiate(rocket, transform.position, Quaternion.identity);
-                    EnemyProjectileBehavior e2 = newRocket2.GetComponent<EnemyProjectileBehavior>();
-                    float rotationDeg = ((float)i + 0.5f) * projectileRotationDegree;
-
-                    Vector2 left = Quaternion.AngleAxis(rotationDeg, Vector3.forward) * toPlayer;
-                    Vector2 right = Quaternion.AngleAxis(-rotationDeg, Vector3.forward) * toPlayer;
-
-                    Debug.DrawLine(transform.position, new Vector3(transform.position.x + left.x, transform.position.y + left.y, 0.0f));
-
-                    e1.ChangeDirection(left);
-                    e2.ChangeDirection(right);
-                }
+                SpriteRenderer s = child.GetComponent<SpriteRenderer>();
+                s.enabled = false;
             }
-            else
-            {
-                Vector2 toPlayer = player.transform.position - transform.position; // Get Vec2 direction to player
-                for (int i = 0; i < n / 2; ++i)
-                {
-                    GameObject newRocket1 = Instantiate(rocket, transform.position, Quaternion.identity);
-                    EnemyProjectileBehavior e1 = newRocket1.GetComponent<EnemyProjectileBehavior>();
-                    GameObject newRocket2 = Instantiate(rocket, transform.position, Quaternion.identity);
-                    EnemyProjectileBehavior e2 = newRocket2.GetComponent<EnemyProjectileBehavior>();
-                    float rotationDeg = ((float)i + 1.0f) * projectileRotationDegree;
-
-                    Vector2 left = Quaternion.AngleAxis(rotationDeg, Vector3.forward) * toPlayer;
-                    Vector2 right = Quaternion.AngleAxis(-rotationDeg, Vector3.forward) * toPlayer;
-
-                    Debug.DrawLine(transform.position, new Vector3(transform.position.x + left.x, transform.position.y + left.y, 0.0f));
-
-                    e1.ChangeDirection(left);
-                    e2.ChangeDirection(right);
-                }
-                GameObject newRocket3 = Instantiate(rocket, transform.position, Quaternion.identity);
-                EnemyProjectileBehavior e3 = newRocket3.GetComponent<EnemyProjectileBehavior>();
-                e3.ChangeDirection(toPlayer);
-            }
+            e.ChangeDirection(Vector3.down);
         }
     }
 
@@ -279,4 +305,8 @@ public class GreenEnemyBehavior : MonoBehaviour
         transform.up = Vector3.down;
     }
 
+    public GameObject GetOriginalPosGameObject()
+    {
+        return originalPos;
+    }
 }

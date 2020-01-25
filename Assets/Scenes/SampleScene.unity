@@ -216,6 +216,9 @@ MonoBehaviour:
   redEnemy: {fileID: 164180409143465922, guid: fbc28aac04d5e0f48ac068eb1c0cdf36, type: 3}
   greenEnemy: {fileID: 2772203067441251225, guid: 6fee0ab3aa094524fa66a22f1e49bc43,
     type: 3}
+  blueEnemies: []
+  redEnemies: []
+  greenEnemies: []
   scoreText: {fileID: 1763194549}
   score: 0
 --- !u!1 &519420028

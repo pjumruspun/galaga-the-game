@@ -18,6 +18,7 @@ MonoBehaviour:
   spawnLocationLeft: {fileID: 0}
   spawnLocationRight: {fileID: 0}
   rocket: {fileID: 4444512787877957088, guid: 4b5a306de0e65184b9edb46a2f5273e7, type: 3}
+  laser: {fileID: 8256211299698690662, guid: a8f75d604aae2794ab4c4d8a769debbd, type: 3}
 --- !u!1001 &1993376825675912107
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -18,12 +18,18 @@ public class CollisionHandler : MonoBehaviour
 
     private void OnControllerColliderHit(ControllerColliderHit hit)
     {
-        if(hit.gameObject.tag == "Player" && (gameObject.tag == "Enemy" || gameObject.tag == "RedEnemy" || gameObject.tag == "Rocket" || gameObject.tag == "GreenEnemy"))
+        Debug.Log("13 - " + gameObject.tag + " just hit " + hit.gameObject.tag);
+
+        if (hit.gameObject.tag == "Player" && (gameObject.tag == "Enemy" || gameObject.tag == "RedEnemy" || gameObject.tag == "Rocket" || gameObject.tag == "GreenEnemy" || gameObject.tag == "Laser"))
         {
-            if(!playerLife.GetInvulnerableStatus())
+            // DebugMissingObj();
+            Debug.Log("6");
+            if (!playerLife.GetInvulnerableStatus())
             {
-                if(gameObject.tag == "Enemy")
+                Debug.Log("5");
+                if (gameObject.tag == "Enemy")
                 {
+                    Debug.Log("4");
                     playerLife.Respawn();
                     Destroy(transform.parent.gameObject);
                     Destroy(hit.gameObject);
@@ -32,6 +38,7 @@ public class CollisionHandler : MonoBehaviour
                 }
                 else if(gameObject.tag == "RedEnemy")
                 {
+                    Debug.Log("3");
                     playerLife.Respawn();
                     Destroy(transform.parent.gameObject);
                     Destroy(hit.gameObject);
@@ -40,6 +47,7 @@ public class CollisionHandler : MonoBehaviour
                 }
                 else if (gameObject.tag == "GreenEnemy")
                 {
+                    Debug.Log("2");
                     playerLife.Respawn();
                     Destroy(transform.parent.gameObject);
                     Destroy(hit.gameObject);
@@ -48,9 +56,15 @@ public class CollisionHandler : MonoBehaviour
                 }
                 else if(gameObject.tag == "Rocket")
                 {
-                    Debug.Log("Got shot");
+                    Debug.Log("1");
                     playerLife.Respawn();
                     Destroy(gameObject);
+                    Destroy(hit.gameObject);
+                }
+                else if (gameObject.tag == "Laser")
+                {
+                    Debug.Log("LASER");
+                    playerLife.Respawn();
                     Destroy(hit.gameObject);
                 }
             }
@@ -83,13 +97,28 @@ public class CollisionHandler : MonoBehaviour
                 }
                 else if (hit.gameObject.tag == "GreenEnemy" && gameObject.tag == "Projectile")
                 {
-                    Destroy(hit.transform.parent.gameObject);
+                    GreenEnemyBehavior g = hit.transform.gameObject.GetComponent<GreenEnemyBehavior>();
+                    Destroy(hit.transform.gameObject);
+                    Destroy(g.GetOriginalPosGameObject());
                     Destroy(gameObject);
                     m.EnemyCountDecrement();
                     m.GreenEnemyDestroyed(true);
                 }
 
             }
+        }
+    }
+
+    private void DebugMissingObj()
+    {
+        if (gameManager == null)
+        {
+            gameManager = GameObject.Find("Game Manager");
+        }
+
+        if (playerLife == null)
+        {
+            playerLife = gameManager.GetComponent<PlayerLife>();
         }
     }
 }
