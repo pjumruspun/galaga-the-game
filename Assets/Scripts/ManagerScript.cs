@@ -196,7 +196,7 @@ public class ManagerScript : MonoBehaviour
             }
             catch (ArgumentOutOfRangeException)
             {
-                Debug.Log("Weird index but okay");
+                // Debug.Log("Weird index but okay");
                 if (numberOfEnemies == 0)
                 {
                     StartCoroutine(GenerateAllEnemy());
@@ -213,19 +213,19 @@ public class ManagerScript : MonoBehaviour
                     }
                     catch (NullReferenceException e)
                     {
-                        Debug.Log(e.ToString());
+                        // Debug.Log(e.ToString());
                     }
                 }
             }
             catch (MissingReferenceException e)
             {
-                Debug.Log("Blue missing Reference! I'm trying to do recursion while delete the missing obj");
+                // Debug.Log("Blue missing Reference! I'm trying to do recursion while delete the missing obj");
                 blueEnemies.Remove(blue);
                 BlueEnemyChasePlayer();
             }
             catch (NullReferenceException)
             {
-                Debug.Log("blue is null!");
+                // Debug.Log("blue is null!");
             }
         }
     }
@@ -248,7 +248,7 @@ public class ManagerScript : MonoBehaviour
                     StartCoroutine(GenerateAllEnemy());
                 }
                 */
-                Debug.Log(e.ToString());
+                // Debug.Log(e.ToString());
             }
             try
             {
@@ -261,19 +261,19 @@ public class ManagerScript : MonoBehaviour
                     }
                     catch (NullReferenceException e)
                     {
-                        Debug.Log(e.ToString());
+                        // Debug.Log(e.ToString());
                     }
                 }
             }
             catch (MissingReferenceException e)
             {
-                Debug.Log("Red missing Reference! I'm trying to do recursion while delete the missing obj");
+                // Debug.Log("Red missing Reference! I'm trying to do recursion while delete the missing obj");
                 redEnemies.Remove(red);
                 RedEnemyChasePlayer();
             }
             catch (NullReferenceException)
             {
-                Debug.Log("red is null!");
+                // Debug.Log("red is null!");
             }
         }
     }
@@ -296,7 +296,7 @@ public class ManagerScript : MonoBehaviour
                     StartCoroutine(GenerateAllEnemy());
                 }
                 */
-                Debug.Log(e.ToString());
+                // Debug.Log(e.ToString());
             }
             try
             {
@@ -309,19 +309,19 @@ public class ManagerScript : MonoBehaviour
                     }
                     catch (NullReferenceException e)
                     {
-                        Debug.Log(e.ToString());
+                        // Debug.Log(e.ToString());
                     }
                 }
             }
             catch (MissingReferenceException)
             {
-                Debug.Log("Green missing Reference! I'm trying to do recursion while delete the missing obj");
+                // Debug.Log("Green missing Reference! I'm trying to do recursion while delete the missing obj");
                 greenEnemies.Remove(green);
                 GreenEnemyChasePlayer();
             }
             catch (NullReferenceException)
             {
-                Debug.Log("green is null!");
+                // Debug.Log("green is null!");
             }
         }
     }

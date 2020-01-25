@@ -33,7 +33,7 @@ public class GreenEnemyBehavior : MonoBehaviour
     // State Variable
     enum State
     {
-        Idle, Chase, Destroy, Relocation, Reposition
+        Idle, Chase, Destroy, Relocation, Reposition, Shooting
     }
     State currentState;
 
@@ -46,10 +46,13 @@ public class GreenEnemyBehavior : MonoBehaviour
     private GameObject rocket;
     private const float projectileRotationDegree = 30;
     private const float shootingDistanceY = 1.5f;
+    private const float laserTime = 2.0f;
+    private float currentLaserTime;
 
     // Start is called before the first frame update
     void Start()
     {
+        currentLaserTime = 0.0f;
         gameManager = GameObject.Find("Game Manager");
         m = gameManager.GetComponent<ManagerScript>();
         this.gameObject.tag = "GreenEnemy";
@@ -114,6 +117,21 @@ public class GreenEnemyBehavior : MonoBehaviour
                 relocationCounter = 0;
             }
         }
+        else if (currentState == State.Shooting)
+        {
+            ResetRotation();
+            if(currentLaserTime < laserTime)
+            {
+                Debug.Log("SHOOOOOT");
+                // TO DO: Implement shooting
+            }
+            else
+            {
+                currentLaserTime = 0.0f;
+                currentState = State.Reposition;
+            }
+            currentLaserTime += Time.deltaTime;
+        }
     }
 
     private void FlyToPlayer()
@@ -138,7 +156,7 @@ public class GreenEnemyBehavior : MonoBehaviour
         if (diffY <= shootingDistanceY)
         {
             Shoot(m.GetNumberOfRockets());
-            currentState = State.Reposition;
+            currentState = State.Shooting;
         }
         move = Vector3.zero;
         float randomSpeedFactor = UnityEngine.Random.Range(0.9f, 1.1f);
@@ -260,4 +278,5 @@ public class GreenEnemyBehavior : MonoBehaviour
     {
         transform.up = Vector3.down;
     }
+
 }
