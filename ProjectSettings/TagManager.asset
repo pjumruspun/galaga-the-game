@@ -13,6 +13,7 @@ TagManager:
   - GameManager
   - EnemyGroup
   - GameOverText
+  - GreenEnemy
   layers:
   - Default
   - TransparentFX

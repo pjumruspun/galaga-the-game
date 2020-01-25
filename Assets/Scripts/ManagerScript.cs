@@ -14,25 +14,31 @@ public class ManagerScript : MonoBehaviour
     private GameObject enemyGroup;
     public GameObject blueEnemy;
     public GameObject redEnemy;
+    public GameObject greenEnemy;
 
     // Enemy containers
     private List<GameObject> blueEnemies;
     private List<GameObject> redEnemies;
+    private List<GameObject> greenEnemies;
     private int numberOfEnemies;
     private int numberOfBlueEnemies;
     private int numberOfRedEnemies;
+    private int numberOfGreenEnemies;
 
     // Enemy attack rate
     private const float blueEnemyCooldown = 3.0f;
     private float currentBlueEnemyCooldown;
     private const float redEnemyCooldown = 5.0f;
     private float currentRedEnemyCooldown;
+    private const float greenEnemyCooldown = 5.0f;
+    private float currentGreenEnemyCooldown;
 
     // Score implementation
     public Text scoreText;
     public int score;
-    private const int BlueEnemyScoreGain = 100;
-    private const int RedEnemyScoreGain = 200;
+    private const int blueEnemyScoreGain = 100;
+    private const int redEnemyScoreGain = 200;
+    private const int greenEnemyScoreGain = 300;
 
     // New wave of enemy
     private bool isGeneratingNewEnemies;
@@ -55,6 +61,7 @@ public class ManagerScript : MonoBehaviour
         UpdateScore();
         HandleBlueEnemyChasing();
         HandleRedEnemyChasing();
+        HandleGreenEnemyChasing();
         HandleEnemyRegenerating();
     }
 
@@ -66,14 +73,21 @@ public class ManagerScript : MonoBehaviour
     public void BlueEnemyDestroyed(bool scoreGain)
     {
         --numberOfBlueEnemies;
-        if(scoreGain) score += BlueEnemyScoreGain;
+        if(scoreGain) score += blueEnemyScoreGain;
         UpdateScore();
     }
 
     public void RedEnemyDestroyed(bool scoreGain)
     {
         --numberOfRedEnemies;
-        if (scoreGain) score += RedEnemyScoreGain;
+        if (scoreGain) score += redEnemyScoreGain;
+        UpdateScore();
+    }
+
+    public void GreenEnemyDestroyed(bool scoreGain)
+    {
+        --numberOfGreenEnemies;
+        if (scoreGain) score += greenEnemyScoreGain;
         UpdateScore();
     }
 
@@ -84,21 +98,24 @@ public class ManagerScript : MonoBehaviour
         yield return new WaitForSeconds(1.5f);
         EnemyGroupMovement e = enemyGroup.GetComponent<EnemyGroupMovement>();
         e.ResetState();
-        numberOfEnemies += 20;
+        numberOfEnemies += 25;
         numberOfBlueEnemies += 10;
         numberOfRedEnemies += 10;
+        numberOfGreenEnemies += 5;
         for (int i = 0; i < 5; ++i)
         {
             for (int j = 0; j < 2; ++j)
             {
                 GenerateBlueEnemy(i, j);
                 GenerateRedEnemy(i, j);
+                if (j == 0) GenerateGreenEnemy(i, j);
             }
         }
         yield return new WaitForSeconds(0.05f);
 
         SortBlueEnemyRenderer();
         SortRedEnemyRenderer();
+        SortGreenEnemyRenderer();
         
         isGeneratingNewEnemies = false;
         // enemyGroup.transform.position = Vector3.zero;
@@ -122,6 +139,15 @@ public class ManagerScript : MonoBehaviour
         SpriteRenderer s = newRedEnemy.GetComponentInChildren<SpriteRenderer>();
     }
 
+    private void GenerateGreenEnemy(int posi, int posj)
+    {
+        GameObject newGreenEnemy = Instantiate(greenEnemy);
+        newGreenEnemy.transform.parent = enemyGroup.transform;
+        newGreenEnemy.transform.position = new Vector3(posi - 2.0f, posj + 4.0f, 0.0f); // two rows above blue enemies
+        greenEnemies.Add(newGreenEnemy);
+        SpriteRenderer s = newGreenEnemy.GetComponentInChildren<SpriteRenderer>();
+    }
+
     private void SortBlueEnemyRenderer()
     {
         foreach (GameObject b in blueEnemies)
@@ -141,6 +167,18 @@ public class ManagerScript : MonoBehaviour
             if (r != null)
             {
                 SpriteRenderer s = r.GetComponentInChildren<SpriteRenderer>();
+                s.sortingOrder = 0;
+            }
+        }
+    }
+
+    private void SortGreenEnemyRenderer()
+    {
+        foreach (GameObject g in greenEnemies)
+        {
+            if (g != null)
+            {
+                SpriteRenderer s = g.GetComponentInChildren<SpriteRenderer>();
                 s.sortingOrder = 0;
             }
         }
@@ -240,6 +278,54 @@ public class ManagerScript : MonoBehaviour
         }
     }
 
+    private void GreenEnemyChasePlayer()
+    {
+        if (!isGeneratingNewEnemies)
+        {
+            int randInt = UnityEngine.Random.Range(0, greenEnemies.Count);
+            GameObject green = null;
+            try
+            {
+                green = greenEnemies[randInt];
+            }
+            catch (ArgumentOutOfRangeException e)
+            {
+                /*
+                if (numberOfEnemies == 0)
+                {
+                    StartCoroutine(GenerateAllEnemy());
+                }
+                */
+                Debug.Log(e.ToString());
+            }
+            try
+            {
+                GreenEnemyBehavior g = green.GetComponentInChildren<GreenEnemyBehavior>();
+                if (green != null)
+                {
+                    try
+                    {
+                        g.ChasePlayer();
+                    }
+                    catch (NullReferenceException e)
+                    {
+                        Debug.Log(e.ToString());
+                    }
+                }
+            }
+            catch (MissingReferenceException)
+            {
+                Debug.Log("Green missing Reference! I'm trying to do recursion while delete the missing obj");
+                greenEnemies.Remove(green);
+                GreenEnemyChasePlayer();
+            }
+            catch (NullReferenceException)
+            {
+                Debug.Log("green is null!");
+            }
+        }
+    }
+
     private void UpdateScore()
     {
         String scoreStr = "Score: " + score.ToString();
@@ -272,18 +358,29 @@ public class ManagerScript : MonoBehaviour
         currentRedEnemyCooldown += Time.deltaTime;
     }
 
+    private void HandleGreenEnemyChasing()
+    {
+        if (currentGreenEnemyCooldown > greenEnemyCooldown)
+        {
+            GreenEnemyChasePlayer();
+            currentGreenEnemyCooldown = 0.0f;
+        }
+        currentGreenEnemyCooldown += Time.deltaTime;
+    }
+
     private void HandleEnemyRegenerating()
     {
         if (numberOfEnemies <= 0 && !isGeneratingNewEnemies)
         {
-            ClearAll(blueEnemies);
-            ClearAll(redEnemies);
-            
+            DestroyAll(blueEnemies);
+            DestroyAll(redEnemies);
+            DestroyAll(greenEnemies);
+
             StartCoroutine(GenerateAllEnemy());
         }
     }
 
-    private void ClearAll(List<GameObject> aList)
+    private void DestroyAll(List<GameObject> aList)
     {
         foreach (GameObject r in aList)
         {
@@ -301,8 +398,9 @@ public class ManagerScript : MonoBehaviour
     {
         Time.timeScale = 1;
 
-        ClearAll(blueEnemies);
-        ClearAll(redEnemies);
+        DestroyAll(blueEnemies);
+        DestroyAll(redEnemies);
+        DestroyAll(greenEnemies);
         ClearAllProjectilesAndRockets();
 
         InitializeGame();
@@ -312,6 +410,7 @@ public class ManagerScript : MonoBehaviour
     {
         GameObject[] projs = GameObject.FindGameObjectsWithTag("Projectile");
         GameObject[] rockets = GameObject.FindGameObjectsWithTag("Rocket");
+        // TO DO: Clear laser
         foreach(GameObject g in projs)
         {
             Destroy(g);
@@ -330,9 +429,12 @@ public class ManagerScript : MonoBehaviour
         isGeneratingNewEnemies = true;
         currentBlueEnemyCooldown = 0.0f;
         currentRedEnemyCooldown = 0.0f;
+        currentGreenEnemyCooldown = 0.0f;
         score = 0;
         numberOfEnemies = 0;
         numberOfBlueEnemies = 0;
+        numberOfRedEnemies = 0;
+        numberOfGreenEnemies = 0;
 
         Physics.IgnoreLayerCollision(enemyLayer, enemyLayer); // Ignore collision between enemies
         Physics.IgnoreLayerCollision(playerProjectileLayer, rocketLayer); // Ignore collision between projectiles and rockets
@@ -341,6 +443,7 @@ public class ManagerScript : MonoBehaviour
 
         blueEnemies = new List<GameObject>();
         redEnemies = new List<GameObject>();
+        greenEnemies = new List<GameObject>();
 
         UpdateScore();
         StartCoroutine(GenerateAllEnemy());
