@@ -11,16 +11,16 @@ public class ManagerScript : MonoBehaviour
     private int numberOfRockets = 3;
 
     // Essential components
-    public GameObject enemyGroup;
+    private GameObject enemyGroup;
     public GameObject blueEnemy;
     public GameObject redEnemy;
 
     // Enemy containers
-    public List<GameObject> blueEnemies;
-    public List<GameObject> redEnemies;
-    public int numberOfEnemies;
-    public int numberOfBlueEnemies;
-    public int numberOfRedEnemies;
+    private List<GameObject> blueEnemies;
+    private List<GameObject> redEnemies;
+    private int numberOfEnemies;
+    private int numberOfBlueEnemies;
+    private int numberOfRedEnemies;
 
     // Enemy attack rate
     private const float blueEnemyCooldown = 3.0f;
@@ -81,7 +81,7 @@ public class ManagerScript : MonoBehaviour
     {
         UpdateScore();
         isGeneratingNewEnemies = true;
-        yield return new WaitForSeconds(1.0f);
+        yield return new WaitForSeconds(1.5f);
         EnemyGroupMovement e = enemyGroup.GetComponent<EnemyGroupMovement>();
         e.ResetState();
         numberOfEnemies += 20;
@@ -95,12 +95,13 @@ public class ManagerScript : MonoBehaviour
                 GenerateRedEnemy(i, j);
             }
         }
-        yield return new WaitForSeconds(1.0f);
+        yield return new WaitForSeconds(0.05f);
 
         SortBlueEnemyRenderer();
         SortRedEnemyRenderer();
         
         isGeneratingNewEnemies = false;
+        // enemyGroup.transform.position = Vector3.zero;
     }
 
     private void GenerateBlueEnemy(int posi, int posj)
@@ -110,7 +111,6 @@ public class ManagerScript : MonoBehaviour
         newBlueEnemy.transform.position = new Vector3(posi - 2.0f, posj + 0.0f, 0.0f);
         blueEnemies.Add(newBlueEnemy);
         SpriteRenderer s = newBlueEnemy.GetComponentInChildren<SpriteRenderer>();
-        s.sortingOrder = -2;
     }
 
     private void GenerateRedEnemy(int posi, int posj)
@@ -120,7 +120,6 @@ public class ManagerScript : MonoBehaviour
         newRedEnemy.transform.position = new Vector3(posi - 2.0f, posj + 2.0f, 0.0f); // two rows above blue enemies
         redEnemies.Add(newRedEnemy);
         SpriteRenderer s = newRedEnemy.GetComponentInChildren<SpriteRenderer>();
-        s.sortingOrder = -2;
     }
 
     private void SortBlueEnemyRenderer()
@@ -325,7 +324,9 @@ public class ManagerScript : MonoBehaviour
 
     private void InitializeGame()
     {
-        Time.timeScale = 1;
+        enemyGroup = GameObject.FindGameObjectWithTag("EnemyGroup");
+
+        Time.timeScale = 1f;
         isGeneratingNewEnemies = true;
         currentBlueEnemyCooldown = 0.0f;
         currentRedEnemyCooldown = 0.0f;
@@ -343,5 +344,6 @@ public class ManagerScript : MonoBehaviour
 
         UpdateScore();
         StartCoroutine(GenerateAllEnemy());
+
     }
 }
