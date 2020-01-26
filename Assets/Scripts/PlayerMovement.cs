@@ -16,9 +16,14 @@ public class PlayerMovement : MonoBehaviour
     // Controlling Variables
     Vector3 move;
 
+    // Shooting Handling Variables
+    private const float shootingCooldown = 0.3f;
+    private float currentShootingCooldown;
+
     // Start is called before the first frame update
     void Start()
     {
+        currentShootingCooldown = 0.0f;
         controller = GetComponent<CharacterController>();
     }
 
@@ -46,9 +51,12 @@ public class PlayerMovement : MonoBehaviour
 
     private void HandleShooting()
     {
-        if (Input.GetKeyDown(KeyCode.Space))
+        if (Input.GetKey(KeyCode.Space) && currentShootingCooldown > shootingCooldown)
         {
             Instantiate(projectile, gameObject.transform.position, Quaternion.identity);
+            currentShootingCooldown = 0.0f;
         }
+        if(currentShootingCooldown < shootingCooldown)
+            currentShootingCooldown += Time.deltaTime;
     }
 }

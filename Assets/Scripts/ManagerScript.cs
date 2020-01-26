@@ -30,11 +30,11 @@ public class ManagerScript : MonoBehaviour
     private int numberOfGreenEnemies;
 
     // Enemy attack rate
-    private const float blueEnemyCooldown = 9.0f;
+    private const float blueEnemyCooldown = 2.78f;
     private float currentBlueEnemyCooldown;
-    private const float redEnemyCooldown = 12.0f;
+    private const float redEnemyCooldown = 5.95f;
     private float currentRedEnemyCooldown;
-    private const float greenEnemyCooldown = 4.0f;
+    private const float greenEnemyCooldown = 7.32f;
     private float currentGreenEnemyCooldown;
 
     // Score implementation
