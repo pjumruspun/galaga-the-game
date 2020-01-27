@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class EnemyGroupMovement : MonoBehaviour
 {
+    // Essential Components
+    private ManagerScript managerScript;
+
     // Constants
     private const float moveSpeed = 1.5f;
     private const float leftBound = -1.0f;
@@ -24,6 +27,7 @@ public class EnemyGroupMovement : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        managerScript = GameObject.FindGameObjectWithTag("GameManager").GetComponent<ManagerScript>();
         float curX = gameObject.transform.position.x;
         currentState = State.Right; // Move right first
         currentFrameCount = 0;
@@ -82,7 +86,10 @@ public class EnemyGroupMovement : MonoBehaviour
                 currentFrameCount = 0;
             }
         }
-        transform.position += move * Time.deltaTime;
+
+        float speedMult = managerScript.GetEnemySpeedMult();
+        if (speedMult < 0) speedMult = 0;
+        transform.position += move * Time.deltaTime * speedMult;
     }
 
     public void ResetState()

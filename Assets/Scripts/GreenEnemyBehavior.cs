@@ -10,8 +10,7 @@ public class GreenEnemyBehavior : MonoBehaviour
 
     // Essential Components
     private CharacterController controller;
-    private GameObject gameManager;
-    private ManagerScript m;
+    private ManagerScript managerScript;
     public GameObject player;
     public GameObject originalPos;
     public GameObject spawnLocationLeft;
@@ -66,8 +65,7 @@ public class GreenEnemyBehavior : MonoBehaviour
         isLaserRendererEnabled = true;
         isShootingLaser = false;
         currentLaserTime = 0.0f;
-        gameManager = GameObject.Find("Game Manager");
-        m = gameManager.GetComponent<ManagerScript>();
+        managerScript = GameObject.Find("Game Manager").GetComponent<ManagerScript>();
         this.gameObject.tag = "GreenEnemy";
         controller = GetComponent<CharacterController>();
         currentState = State.Relocation;
@@ -81,6 +79,8 @@ public class GreenEnemyBehavior : MonoBehaviour
     void Update()
     {
         HandleState();
+        greenEnemySpeedMultiplier = managerScript.GetEnemySpeedMult();
+        if (greenEnemySpeedMultiplier < 0) greenEnemySpeedMultiplier = 0;
     }
 
     private void HandleState()

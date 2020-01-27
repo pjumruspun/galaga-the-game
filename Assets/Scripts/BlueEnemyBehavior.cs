@@ -5,8 +5,8 @@ using UnityEngine;
 
 public class BlueEnemyBehavior : MonoBehaviour
 {
-    // Controllable speed
-    public float blueEnemySpeedMultiplier = 1.0f;
+    // Overall Speed
+    private float blueEnemySpeedMultiplier = 1.0f;
 
     // Essential Components
     private CharacterController controller;
@@ -14,6 +14,7 @@ public class BlueEnemyBehavior : MonoBehaviour
     public GameObject originalPos;
     public GameObject spawnLocationLeft;
     public GameObject spawnLocationRight;
+    private ManagerScript managerScript;
 
     // Constants
     private const float repositionSpeed = 5.0f;
@@ -42,6 +43,7 @@ public class BlueEnemyBehavior : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        managerScript = GameObject.FindGameObjectWithTag("GameManager").GetComponent<ManagerScript>();
         this.gameObject.tag = "Enemy";
         controller = GetComponent<CharacterController>();
         currentState = State.Relocation;
@@ -55,6 +57,8 @@ public class BlueEnemyBehavior : MonoBehaviour
     void Update()
     {
         HandleState();
+        blueEnemySpeedMultiplier = managerScript.GetEnemySpeedMult();
+        if (blueEnemySpeedMultiplier < 0) blueEnemySpeedMultiplier = 0;
     }
 
     private void HandleState()
@@ -123,20 +127,7 @@ public class BlueEnemyBehavior : MonoBehaviour
             playerX = 0.0f;
             ResetRotation();
         }
-        /*
-        try
-        {
-            playerX = player.transform.position.x;
-        }
-        catch (MissingReferenceException)
-        {
-            player = GameObject.FindGameObjectWithTag("Player");  
-        }
-        catch (NullReferenceException)
-        {
-            player = GameObject.FindGameObjectWithTag("Player");
-            playerX = 0.0f;
-        }*/
+
         move = Vector3.zero;
         float randomSpeedFactor = UnityEngine.Random.Range(0.9f, 1.1f);
         move += Vector3.down * verticalSpeed * blueEnemySpeedMultiplier * randomSpeedFactor;

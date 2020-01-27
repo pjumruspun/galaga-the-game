@@ -10,8 +10,7 @@ public class RedEnemyBehavior : MonoBehaviour
 
     // Essential Components
     private CharacterController controller;
-    private GameObject gameManager;
-    private ManagerScript m;
+    private ManagerScript managerScript;
     public GameObject player;
     public GameObject originalPos;
     public GameObject spawnLocationLeft;
@@ -50,8 +49,7 @@ public class RedEnemyBehavior : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        gameManager = GameObject.Find("Game Manager");
-        m = gameManager.GetComponent<ManagerScript>();
+        managerScript = GameObject.Find("Game Manager").GetComponent<ManagerScript>();
         this.gameObject.tag = "RedEnemy";
         controller = GetComponent<CharacterController>();
         currentState = State.Relocation;
@@ -65,6 +63,8 @@ public class RedEnemyBehavior : MonoBehaviour
     void Update()
     {
         HandleState();
+        redEnemySpeedMultiplier = managerScript.GetEnemySpeedMult();
+        if (redEnemySpeedMultiplier < 0) redEnemySpeedMultiplier = 0;
     }
 
     private void HandleState()
@@ -135,24 +135,10 @@ public class RedEnemyBehavior : MonoBehaviour
             playerX = 0.0f;
             ResetRotation();
         }
-        /*
-        try
-        {
-            playerX = player.transform.position.x;
-            diffY = Mathf.Abs(player.transform.position.y - transform.position.y);
-        }
-        catch (MissingReferenceException)
-        {
-            player = GameObject.FindGameObjectWithTag("Player");
-        }
-        catch (NullReferenceException)
-        {
-            player = GameObject.FindGameObjectWithTag("Player");
-            playerX = 0.0f;
-        }*/
+
         if(diffY <= shootingDistanceY)
         {
-            Shoot(m.GetNumberOfRockets());
+            Shoot(managerScript.GetNumberOfRockets());
             currentState = State.Reposition;
         }
         move = Vector3.zero;

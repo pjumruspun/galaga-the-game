@@ -10,6 +10,10 @@ public class ManagerScript : MonoBehaviour
     [SerializeField]
     private int numberOfRockets = 3;
 
+    // Adjustable Enemy Speed
+    [SerializeField]
+    private float enemySpeedMult = 1.0f;
+
     // Essential components
     private GameObject enemyGroup;
     public GameObject blueEnemy;
@@ -52,6 +56,11 @@ public class ManagerScript : MonoBehaviour
     private const int playerLayer = 9;
     private const int rocketLayer = 10;
     private const int playerProjectileLayer = 11;
+
+    // Level implementation
+    [SerializeField]
+    private Text levelText;
+    private int level = 0;
 
     // Start is called before the first frame update
     void Start()
@@ -125,7 +134,10 @@ public class ManagerScript : MonoBehaviour
 
     IEnumerator GenerateAllEnemy()
     {
+        ++level;
+        UpdateLevel();
         UpdateScore();
+        enemySpeedMult = (level - 1) * 0.1f + 1.0f;
         isGeneratingNewEnemies = true;
         yield return new WaitForSeconds(1.5f);
         EnemyGroupMovement e = enemyGroup.GetComponent<EnemyGroupMovement>();
@@ -265,9 +277,17 @@ public class ManagerScript : MonoBehaviour
         scoreText.text = scoreStr;
     }
 
+    private void UpdateLevel()
+    {
+        String levelStr = "Level: " + level.ToString();
+        levelText.text = levelStr;
+    }
+
     private void HandleBlueEnemyChasing()
     {
-        if (currentBlueEnemyCooldown > blueEnemyCooldown)
+        float e = enemySpeedMult;
+        if (e < 0.5f) e = 0.5f;
+        if (currentBlueEnemyCooldown > blueEnemyCooldown / e)
         {
             BlueEnemyChasePlayer();
             int doubleChase = UnityEngine.Random.Range(0, 2);
@@ -280,7 +300,9 @@ public class ManagerScript : MonoBehaviour
 
     private void HandleRedEnemyChasing()
     {
-        if (currentRedEnemyCooldown > redEnemyCooldown)
+        float e = enemySpeedMult;
+        if (e < 0.5f) e = 0.5f;
+        if (currentRedEnemyCooldown > redEnemyCooldown / e)
         {
             RedEnemyChasePlayer();
             int doubleChase = UnityEngine.Random.Range(0, 2);
@@ -293,7 +315,9 @@ public class ManagerScript : MonoBehaviour
 
     private void HandleGreenEnemyChasing()
     {
-        if (currentGreenEnemyCooldown > greenEnemyCooldown)
+        float e = enemySpeedMult;
+        if (e < 0.5f) e = 0.5f;
+        if (currentGreenEnemyCooldown > greenEnemyCooldown / e)
         {
             GreenEnemyChasePlayer();
             currentGreenEnemyCooldown = 0.0f;
@@ -360,6 +384,7 @@ public class ManagerScript : MonoBehaviour
 
     private void InitializeGame()
     {
+        level = 0;
         enemyGroup = GameObject.FindGameObjectWithTag("EnemyGroup");
 
         Time.timeScale = 1f;
@@ -385,5 +410,10 @@ public class ManagerScript : MonoBehaviour
         UpdateScore();
         StartCoroutine(GenerateAllEnemy());
 
+    }
+
+    public float GetEnemySpeedMult()
+    {
+        return enemySpeedMult;
     }
 }
