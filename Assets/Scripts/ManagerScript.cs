@@ -67,6 +67,34 @@ public class ManagerScript : MonoBehaviour
         HandleRedEnemyChasing();
         HandleGreenEnemyChasing();
         HandleEnemyRegenerating();
+        ClearMissingEnemies();
+    }
+
+    private void ClearMissingEnemies()
+    {
+        for (int i = blueEnemies.Count - 1; i > -1; --i)
+        {
+            if (blueEnemies[i] == null)
+            {
+                blueEnemies.RemoveAt(i);
+            }
+        }
+
+        for (int i = redEnemies.Count - 1; i > -1; --i)
+        {
+            if (redEnemies[i] == null)
+            {
+                redEnemies.RemoveAt(i);
+            }
+        }
+
+        for (int i = greenEnemies.Count - 1; i > -1; --i)
+        {
+            if (greenEnemies[i] == null)
+            {
+                greenEnemies.RemoveAt(i);
+            }
+        }
     }
 
     public void EnemyCountDecrement()
@@ -192,142 +220,41 @@ public class ManagerScript : MonoBehaviour
 
     private void BlueEnemyChasePlayer()
     {
-        if (!isGeneratingNewEnemies)
+        if (!isGeneratingNewEnemies && blueEnemies.Count > 0)
         {
             int randInt = UnityEngine.Random.Range(0, blueEnemies.Count);
-            GameObject blue = null;
-            try
+            if (blueEnemies[randInt] != null)
             {
-                blue = blueEnemies[randInt];
+                blueEnemies[randInt].GetComponentInChildren<BlueEnemyBehavior>().ChasePlayer();
             }
-            catch (ArgumentOutOfRangeException)
+            else if (numberOfEnemies == 0)
             {
                 // Debug.Log("Weird index but okay");
-                if (numberOfEnemies == 0)
-                {
-                    StartCoroutine(GenerateAllEnemy());
-                }
-            }
-            try
-            {
-                BlueEnemyBehavior b = blue.GetComponentInChildren<BlueEnemyBehavior>();
-                if (blue != null)
-                {
-                    try
-                    {
-                        b.ChasePlayer();
-                    }
-                    catch (NullReferenceException e)
-                    {
-                        // Debug.Log(e.ToString());
-                    }
-                }
-            }
-            catch (MissingReferenceException e)
-            {
-                // Debug.Log("Blue missing Reference! I'm trying to do recursion while delete the missing obj");
-                blueEnemies.Remove(blue);
-                BlueEnemyChasePlayer();
-            }
-            catch (NullReferenceException)
-            {
-                // Debug.Log("blue is null!");
+                StartCoroutine(GenerateAllEnemy());
             }
         }
     }
 
     private void RedEnemyChasePlayer()
     {
-        if (!isGeneratingNewEnemies)
+        if (!isGeneratingNewEnemies && redEnemies.Count > 0)
         {
             int randInt = UnityEngine.Random.Range(0, redEnemies.Count);
-            GameObject red = null;
-            try
+            if(redEnemies[randInt] != null)
             {
-                red = redEnemies[randInt];
-            }
-            catch (ArgumentOutOfRangeException e)
-            {
-                /*
-                if (numberOfEnemies == 0)
-                {
-                    StartCoroutine(GenerateAllEnemy());
-                }
-                */
-                // Debug.Log(e.ToString());
-            }
-            try
-            {
-                RedEnemyBehavior r = red.GetComponentInChildren<RedEnemyBehavior>();
-                if (red != null)
-                {
-                    try
-                    {
-                        r.ChasePlayer();
-                    }
-                    catch (NullReferenceException e)
-                    {
-                        // Debug.Log(e.ToString());
-                    }
-                }
-            }
-            catch (MissingReferenceException e)
-            {
-                // Debug.Log("Red missing Reference! I'm trying to do recursion while delete the missing obj");
-                redEnemies.Remove(red);
-                RedEnemyChasePlayer();
-            }
-            catch (NullReferenceException)
-            {
-                // Debug.Log("red is null!");
+                redEnemies[randInt].GetComponentInChildren<RedEnemyBehavior>().ChasePlayer();
             }
         }
     }
 
     private void GreenEnemyChasePlayer()
     {
-        if (!isGeneratingNewEnemies)
+        if (!isGeneratingNewEnemies && greenEnemies.Count > 0)
         {
             int randInt = UnityEngine.Random.Range(0, greenEnemies.Count);
-            GameObject green = null;
-            try
+            if(greenEnemies[randInt] != null)
             {
-                green = greenEnemies[randInt];
-            }
-            catch (ArgumentOutOfRangeException e)
-            {
-                /*
-                if (numberOfEnemies == 0)
-                {
-                    StartCoroutine(GenerateAllEnemy());
-                }
-                */
-                // Debug.Log(e.ToString());
-            }
-            try
-            {
-                GreenEnemyBehavior g = green.GetComponentInChildren<GreenEnemyBehavior>();
-                if (green != null)
-                {
-                    try
-                    {
-                        g.ChasePlayer();
-                    }
-                    catch (NullReferenceException e)
-                    {
-                        // Debug.Log(e.ToString());
-                    }
-                }
-            }
-            catch (MissingReferenceException)
-            {
-                // Debug.Log("Green missing Reference! I'm trying to do recursion while delete the missing obj");
-                greenEnemies.Remove(green);
-                GreenEnemyChasePlayer();
-            }
-            catch (NullReferenceException)
-            {
-                // Debug.Log("green is null!");
+                greenEnemies[randInt].GetComponentInChildren<GreenEnemyBehavior>().ChasePlayer();
             }
         }
     }

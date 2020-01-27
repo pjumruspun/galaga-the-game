@@ -111,6 +111,19 @@ public class BlueEnemyBehavior : MonoBehaviour
         
         float curX = gameObject.transform.position.x;
         float playerX = 0.0f;
+
+        if(player != null)
+        {
+            playerX = player.transform.position.x;
+            LookAtPlayer();
+        }
+        else
+        {
+            player = GameObject.FindGameObjectWithTag("Player");
+            playerX = 0.0f;
+            ResetRotation();
+        }
+        /*
         try
         {
             playerX = player.transform.position.x;
@@ -121,8 +134,9 @@ public class BlueEnemyBehavior : MonoBehaviour
         }
         catch (NullReferenceException)
         {
+            player = GameObject.FindGameObjectWithTag("Player");
             playerX = 0.0f;
-        }
+        }*/
         move = Vector3.zero;
         float randomSpeedFactor = UnityEngine.Random.Range(0.9f, 1.1f);
         move += Vector3.down * verticalSpeed * blueEnemySpeedMultiplier * randomSpeedFactor;
@@ -133,14 +147,6 @@ public class BlueEnemyBehavior : MonoBehaviour
         else if (playerX > curX) // Player is on right side of the enemy (from player's perspective)
         {
             move += Vector3.right * horizontalSpeed * blueEnemySpeedMultiplier * randomSpeedFactor; // Chase the player on RHS
-        }
-        try
-        {
-            LookAtPlayer();
-        }
-        catch (NullReferenceException)
-        {
-            ResetRotation();
         }
         controller.Move(move * Time.deltaTime);
     }

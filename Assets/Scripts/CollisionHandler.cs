@@ -18,18 +18,18 @@ public class CollisionHandler : MonoBehaviour
 
     private void OnControllerColliderHit(ControllerColliderHit hit)
     {
-        Debug.Log("13 - " + gameObject.tag + " just hit " + hit.gameObject.tag);
+        //Debug.Log("13 - " + gameObject.tag + " just hit " + hit.gameObject.tag);
 
         if (hit.gameObject.tag == "Player" && (gameObject.tag == "Enemy" || gameObject.tag == "RedEnemy" || gameObject.tag == "Rocket" || gameObject.tag == "GreenEnemy" || gameObject.tag == "Laser"))
         {
             // DebugMissingObj();
-            Debug.Log("6");
+            //Debug.Log("6");
             if (!playerLife.GetInvulnerableStatus())
             {
-                Debug.Log("5");
+                //Debug.Log("5");
                 if (gameObject.tag == "Enemy")
                 {
-                    Debug.Log("4");
+                    //Debug.Log("4");
                     playerLife.Respawn();
                     Destroy(transform.parent.gameObject);
                     Destroy(hit.gameObject);
@@ -38,7 +38,7 @@ public class CollisionHandler : MonoBehaviour
                 }
                 else if(gameObject.tag == "RedEnemy")
                 {
-                    Debug.Log("3");
+                    //Debug.Log("3");
                     playerLife.Respawn();
                     Destroy(transform.parent.gameObject);
                     Destroy(hit.gameObject);
@@ -47,7 +47,7 @@ public class CollisionHandler : MonoBehaviour
                 }
                 else if (gameObject.tag == "GreenEnemy")
                 {
-                    Debug.Log("2");
+                    //Debug.Log("2");
                     playerLife.Respawn();
                     Destroy(transform.parent.gameObject);
                     Destroy(hit.gameObject);
@@ -56,14 +56,14 @@ public class CollisionHandler : MonoBehaviour
                 }
                 else if(gameObject.tag == "Rocket")
                 {
-                    Debug.Log("1");
+                    //Debug.Log("1");
                     playerLife.Respawn();
                     Destroy(gameObject);
                     Destroy(hit.gameObject);
                 }
                 else if (gameObject.tag == "Laser")
                 {
-                    Debug.Log("LASER");
+                    //sDebug.Log("LASER");
                     playerLife.Respawn();
                     Destroy(hit.gameObject);
                 }

@@ -122,6 +122,20 @@ public class RedEnemyBehavior : MonoBehaviour
         float curX = gameObject.transform.position.x;
         float playerX = 0.0f;
         float diffY = 999.0f;
+
+        if(player != null)
+        {
+            playerX = player.transform.position.x;
+            diffY = Mathf.Abs(player.transform.position.y - transform.position.y);
+            LookAtPlayer();
+        }
+        else
+        {
+            player = GameObject.FindGameObjectWithTag("Player");
+            playerX = 0.0f;
+            ResetRotation();
+        }
+        /*
         try
         {
             playerX = player.transform.position.x;
@@ -133,8 +147,9 @@ public class RedEnemyBehavior : MonoBehaviour
         }
         catch (NullReferenceException)
         {
+            player = GameObject.FindGameObjectWithTag("Player");
             playerX = 0.0f;
-        }
+        }*/
         if(diffY <= shootingDistanceY)
         {
             Shoot(m.GetNumberOfRockets());
@@ -150,14 +165,6 @@ public class RedEnemyBehavior : MonoBehaviour
         else if (playerX > curX) // Player is on right side of the enemy (from player's perspective)
         {
             move += Vector3.right * horizontalSpeed * redEnemySpeedMultiplier * randomSpeedFactor; // Chase the player on RHS
-        }
-        try
-        {
-            LookAtPlayer();
-        }
-        catch (NullReferenceException)
-        {
-            ResetRotation();
         }
         controller.Move(move * Time.deltaTime);
     }

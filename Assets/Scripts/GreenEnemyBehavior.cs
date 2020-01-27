@@ -210,6 +210,20 @@ public class GreenEnemyBehavior : MonoBehaviour
         float curX = gameObject.transform.position.x;
         float playerX = 0.0f;
         float diffY = 999.0f;
+
+        if(player != null)
+        {
+            playerX = player.transform.position.x;
+            diffY = Mathf.Abs(player.transform.position.y - transform.position.y);
+            LookAtPlayer();
+        }
+        else
+        {
+            player = GameObject.FindGameObjectWithTag("Player");
+            playerX = 0.0f;
+            ResetRotation();
+        }
+        /*
         try
         {
             playerX = player.transform.position.x;
@@ -221,12 +235,15 @@ public class GreenEnemyBehavior : MonoBehaviour
         }
         catch (NullReferenceException)
         {
+            player = GameObject.FindGameObjectWithTag("Player");
             playerX = 0.0f;
-        }
+        }*/
+
         if (diffY <= shootingDistanceY)
         {
             currentState = State.Shooting;
         }
+
         move = Vector3.zero;
         float randomSpeedFactor = UnityEngine.Random.Range(0.9f, 1.1f);
         move += Vector3.down * verticalSpeed * greenEnemySpeedMultiplier * randomSpeedFactor;
@@ -238,14 +255,7 @@ public class GreenEnemyBehavior : MonoBehaviour
         {
             move += Vector3.right * horizontalSpeed * greenEnemySpeedMultiplier * randomSpeedFactor; // Chase the player on RHS
         }
-        try
-        {
-            LookAtPlayer();
-        }
-        catch (NullReferenceException)
-        {
-            ResetRotation();
-        }
+
         controller.Move(move * Time.deltaTime);
     }
 
