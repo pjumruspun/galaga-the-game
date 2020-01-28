@@ -5,8 +5,10 @@ using UnityEngine;
 public class PlayerMovement : MonoBehaviour
 {
     // Essential Components
-    public CharacterController controller;
-    public GameObject projectile;
+    private CharacterController controller;
+    [SerializeField]
+    private GameObject projectile;
+    private ManagerScript managerScript;
 
     // Constants
     private const float playerSpeed = 5.0f;
@@ -14,7 +16,7 @@ public class PlayerMovement : MonoBehaviour
     private const float rightBound = 3.0f;
 
     // Controlling Variables
-    Vector3 move;
+    private Vector3 move;
 
     // Shooting Handling Variables
     private const float shootingCooldown = 0.3f;
@@ -23,6 +25,7 @@ public class PlayerMovement : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        managerScript = GameObject.FindGameObjectWithTag("GameManager").GetComponent<ManagerScript>();
         currentShootingCooldown = 0.0f;
         controller = GetComponent<CharacterController>();
     }
@@ -51,7 +54,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void HandleShooting()
     {
-        if (Input.GetKey(KeyCode.Space) && currentShootingCooldown > shootingCooldown)
+        if (Input.GetKey(KeyCode.Space) && currentShootingCooldown > shootingCooldown / managerScript.GetShootingSpeedMult())
         {
             Instantiate(projectile, gameObject.transform.position, Quaternion.identity);
             currentShootingCooldown = 0.0f;

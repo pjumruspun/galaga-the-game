@@ -18,9 +18,15 @@ public class CollisionHandler : MonoBehaviour
 
     private void OnControllerColliderHit(ControllerColliderHit hit)
     {
-        //Debug.Log("13 - " + gameObject.tag + " just hit " + hit.gameObject.tag);
+        // Debug.Log("13 - " + gameObject.tag + " just hit " + hit.gameObject.tag);
+        if (hit.gameObject.tag == "SpeedPU" && gameObject.tag == "Player")
+        {
+            // Debug.Log("SPEED2");
+            Destroy(hit.gameObject);
+            m.ShootingSpeedLevelUp();
+        }
 
-        if (hit.gameObject.tag == "Player" && (gameObject.tag == "Enemy" || gameObject.tag == "RedEnemy" || gameObject.tag == "Rocket" || gameObject.tag == "GreenEnemy" || gameObject.tag == "Laser"))
+        if (hit.gameObject.tag == "Player" && (gameObject.tag == "Enemy" || gameObject.tag == "RedEnemy" || gameObject.tag == "Rocket" || gameObject.tag == "GreenEnemy" || gameObject.tag == "Laser" || gameObject.tag == "SpeedPU"))
         {
             // DebugMissingObj();
             //Debug.Log("6");
@@ -63,9 +69,15 @@ public class CollisionHandler : MonoBehaviour
                 }
                 else if (gameObject.tag == "Laser")
                 {
-                    //sDebug.Log("LASER");
+                    //Debug.Log("LASER");
                     playerLife.Respawn();
                     Destroy(hit.gameObject);
+                }
+                else if (gameObject.tag == "SpeedPU")
+                {
+                    // Debug.Log("SPEED");
+                    Destroy(gameObject);
+                    m.ShootingSpeedLevelUp();
                 }
             }
         }
@@ -83,6 +95,7 @@ public class CollisionHandler : MonoBehaviour
                 */
                 if (hit.gameObject.tag == "Enemy" && gameObject.tag == "Projectile")
                 {
+                    SpawnShootingSpeedPowerUp(hit.transform.position, 2.5f);
                     Destroy(hit.transform.parent.gameObject);
                     Destroy(gameObject);
                     m.EnemyCountDecrement();
@@ -90,6 +103,7 @@ public class CollisionHandler : MonoBehaviour
                 }
                 else if (hit.gameObject.tag == "RedEnemy" && gameObject.tag == "Projectile")
                 {
+                    SpawnShootingSpeedPowerUp(hit.transform.position, 5.0f);
                     Destroy(hit.transform.parent.gameObject);
                     Destroy(gameObject);
                     m.EnemyCountDecrement();
@@ -98,11 +112,13 @@ public class CollisionHandler : MonoBehaviour
                 else if (hit.gameObject.tag == "GreenEnemy" && gameObject.tag == "Projectile")
                 {
                     GreenEnemyBehavior g = hit.transform.gameObject.GetComponent<GreenEnemyBehavior>();
+                    SpawnShootingSpeedPowerUp(hit.transform.position, 10.0f);
                     Destroy(hit.transform.gameObject);
                     Destroy(g.GetOriginalPosGameObject());
                     Destroy(gameObject);
                     m.EnemyCountDecrement();
                     m.GreenEnemyDestroyed(true);
+                    
                 }
 
             }
@@ -120,5 +136,17 @@ public class CollisionHandler : MonoBehaviour
         {
             playerLife = gameManager.GetComponent<PlayerLife>();
         }
+    }
+
+    private void SpawnShootingSpeedPowerUp(Vector3 pos, float chance)
+    {
+        float randFloat = GetRandFloat();
+        if (randFloat < chance)
+            Instantiate(m.GetSpeedPowerUp(), pos, Quaternion.identity);
+    }
+
+    private static int GetRandFloat()
+    {
+        return Random.RandomRange(0, 100);
     }
 }

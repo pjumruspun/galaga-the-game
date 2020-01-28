@@ -13,10 +13,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   greenEnemySpeedMultiplier: 1
-  player: {fileID: 0}
-  originalPos: {fileID: 0}
-  spawnLocationLeft: {fileID: 0}
-  spawnLocationRight: {fileID: 0}
+  speedPowerUp: {fileID: 9219920251556933095, guid: 621725e1a63997b40bbbf4a1c7aac7c8,
+    type: 3}
   rocket: {fileID: 4444512787877957088, guid: 4b5a306de0e65184b9edb46a2f5273e7, type: 3}
   laser: {fileID: 8256211299698690662, guid: a8f75d604aae2794ab4c4d8a769debbd, type: 3}
 --- !u!1001 &1993376825675912107

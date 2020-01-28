@@ -11,10 +11,10 @@ public class RedEnemyBehavior : MonoBehaviour
     // Essential Components
     private CharacterController controller;
     private ManagerScript managerScript;
-    public GameObject player;
-    public GameObject originalPos;
-    public GameObject spawnLocationLeft;
-    public GameObject spawnLocationRight;
+    private GameObject player;
+    private GameObject originalPos;
+    private GameObject spawnLocationLeft;
+    private GameObject spawnLocationRight;
 
     // Constants
     private const float repositionSpeed = 5.0f;
@@ -27,14 +27,14 @@ public class RedEnemyBehavior : MonoBehaviour
     private const float repositionDistance = 0.05f;
 
     // Controlling Variables
-    Vector3 move;
+    private Vector3 move;
 
     // State Variable
-    enum State
+    private enum State
     {
         Idle, Chase, Destroy, Relocation, Reposition
     }
-    State currentState;
+    private State currentState;
 
     // Checking Variables
     private const int ensureRelocation = 60;
@@ -43,6 +43,7 @@ public class RedEnemyBehavior : MonoBehaviour
     // Shooting Variables
     [SerializeField]
     private GameObject rocket;
+    private const float maxFanShootingDegree = 220.0f;
     private const float projectileRotationDegree = 30;
     private const float shootingDistanceY = 1.5f;
 
@@ -192,6 +193,17 @@ public class RedEnemyBehavior : MonoBehaviour
         }
         else
         {
+            float realProjectileRotationDegree;
+            if(n > 7)
+            {
+                realProjectileRotationDegree = maxFanShootingDegree / (n - 1);
+            }
+            else
+            {
+                realProjectileRotationDegree = projectileRotationDegree;
+            }
+
+
             if(n % 2 == 0)
             {
                 for(int i = 0; i < n/2; ++i)
@@ -202,7 +214,7 @@ public class RedEnemyBehavior : MonoBehaviour
                     EnemyProjectileBehavior e1 = newRocket1.GetComponent<EnemyProjectileBehavior>();
                     GameObject newRocket2 = Instantiate(rocket, transform.position, Quaternion.identity);
                     EnemyProjectileBehavior e2 = newRocket2.GetComponent<EnemyProjectileBehavior>();
-                    float rotationDeg = ((float)i + 0.5f) * projectileRotationDegree;
+                    float rotationDeg = ((float)i + 0.5f) * realProjectileRotationDegree;
 
                     Vector2 left = Quaternion.AngleAxis(rotationDeg, Vector3.forward) * toPlayer;
                     Vector2 right = Quaternion.AngleAxis(-rotationDeg, Vector3.forward) * toPlayer;
@@ -222,7 +234,7 @@ public class RedEnemyBehavior : MonoBehaviour
                     EnemyProjectileBehavior e1 = newRocket1.GetComponent<EnemyProjectileBehavior>();
                     GameObject newRocket2 = Instantiate(rocket, transform.position, Quaternion.identity);
                     EnemyProjectileBehavior e2 = newRocket2.GetComponent<EnemyProjectileBehavior>();
-                    float rotationDeg = ((float)i + 1.0f) * projectileRotationDegree;
+                    float rotationDeg = ((float)i + 1.0f) * realProjectileRotationDegree;
 
                     Vector2 left = Quaternion.AngleAxis(rotationDeg, Vector3.forward) * toPlayer;
                     Vector2 right = Quaternion.AngleAxis(-rotationDeg, Vector3.forward) * toPlayer;

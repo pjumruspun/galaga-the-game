@@ -18,11 +18,11 @@ public class EnemyGroupMovement : MonoBehaviour
     private int currentFrameCount;
 
     // State Variable
-    enum State
+    private enum State
     {
         Left, Right, Up, Down
     }
-    State currentState;
+    private State currentState;
 
     // Start is called before the first frame update
     void Start()

@@ -13,19 +13,20 @@ public class ManagerScript : MonoBehaviour
     // Adjustable Enemy Speed
     [SerializeField]
     private float enemySpeedMult = 1.0f;
+    private const float maxNaturalEnemySpeedMult = 2.5f;
 
     // Essential components
     private GameObject enemyGroup;
-    public GameObject blueEnemy;
-    public GameObject redEnemy;
-    public GameObject greenEnemy;
+    [SerializeField]
+    private GameObject blueEnemy;
+    [SerializeField]
+    private GameObject redEnemy;
+    [SerializeField]
+    private GameObject greenEnemy;
 
     // Enemy containers
-    [SerializeField]
     private List<GameObject> blueEnemies;
-    [SerializeField]
     private List<GameObject> redEnemies;
-    [SerializeField]
     private List<GameObject> greenEnemies;
     private GameObject[] realGreenEnemyObjs;
     private int numberOfEnemies;
@@ -42,8 +43,9 @@ public class ManagerScript : MonoBehaviour
     private float currentGreenEnemyCooldown;
 
     // Score implementation
-    public Text scoreText;
-    public int score;
+    [SerializeField]
+    private Text scoreText;
+    private int score;
     private const int blueEnemyScoreGain = 100;
     private const int redEnemyScoreGain = 200;
     private const int greenEnemyScoreGain = 300;
@@ -56,11 +58,20 @@ public class ManagerScript : MonoBehaviour
     private const int playerLayer = 9;
     private const int rocketLayer = 10;
     private const int playerProjectileLayer = 11;
+    private const int powerUpLayer = 12;
 
     // Level implementation
     [SerializeField]
     private Text levelText;
     private int level = 0;
+
+    // Shooting Speed Power up implementation
+    [SerializeField]
+    private GameObject speedPowerUp;
+    [SerializeField]
+    private Text speedPowerUpText;
+    private int shootingSpeedLevel;  // MAX LEVEL = 10
+    private float[] shootingSpeedMultiplier = { 1.0f, 1.2f, 1.4f, 1.6f, 1.8f, 1.9f, 2.0f, 2.1f, 2.2f, 2.3f };
 
     // Start is called before the first frame update
     void Start()
@@ -137,7 +148,8 @@ public class ManagerScript : MonoBehaviour
         ++level;
         UpdateLevel();
         UpdateScore();
-        enemySpeedMult = (level - 1) * 0.1f + 1.0f;
+        if(level != 1) enemySpeedMult += 0.1f;
+        if (enemySpeedMult > maxNaturalEnemySpeedMult) enemySpeedMult = maxNaturalEnemySpeedMult;
         isGeneratingNewEnemies = true;
         yield return new WaitForSeconds(1.5f);
         EnemyGroupMovement e = enemyGroup.GetComponent<EnemyGroupMovement>();
@@ -357,7 +369,7 @@ public class ManagerScript : MonoBehaviour
         DestroyAll(blueEnemies);
         DestroyAll(redEnemies);
         DestroyAll(greenEnemies);
-        ClearAllProjectilesAndRockets();
+        ClearAllNonEnemyGameObjects();
 
         foreach(GameObject g in realGreenEnemyObjs)
         {
@@ -367,10 +379,11 @@ public class ManagerScript : MonoBehaviour
         InitializeGame();
     }
 
-    private void ClearAllProjectilesAndRockets()
+    private void ClearAllNonEnemyGameObjects()
     {
         GameObject[] projs = GameObject.FindGameObjectsWithTag("Projectile");
         GameObject[] rockets = GameObject.FindGameObjectsWithTag("Rocket");
+        GameObject[] powerUps = GameObject.FindGameObjectsWithTag("SpeedPU");
         // TO DO: Clear laser
         foreach(GameObject g in projs)
         {
@@ -380,11 +393,16 @@ public class ManagerScript : MonoBehaviour
         {
             Destroy(g);
         }
+        foreach (GameObject g in powerUps)
+        {
+            Destroy(g);
+        }
     }
 
     private void InitializeGame()
     {
         level = 0;
+        shootingSpeedLevel = 1;
         enemyGroup = GameObject.FindGameObjectWithTag("EnemyGroup");
 
         Time.timeScale = 1f;
@@ -403,11 +421,17 @@ public class ManagerScript : MonoBehaviour
         Physics.IgnoreLayerCollision(rocketLayer, rocketLayer); // Ignore collision between rockets and rockets
         Physics.IgnoreLayerCollision(rocketLayer, enemyLayer); // Ignore collision between rockets and enemies
 
+        
+        Physics.IgnoreLayerCollision(8, 12); // Ignore collision between rockets and enemies
+        Physics.IgnoreLayerCollision(10, 12); // Ignore collision between projectiles and rockets
+        Physics.IgnoreLayerCollision(11, 12); // Ignore collision between enemies
+        
         blueEnemies = new List<GameObject>();
         redEnemies = new List<GameObject>();
         greenEnemies = new List<GameObject>();
         
         UpdateScore();
+        UpdateShootingSpeed();
         StartCoroutine(GenerateAllEnemy());
 
     }
@@ -415,5 +439,33 @@ public class ManagerScript : MonoBehaviour
     public float GetEnemySpeedMult()
     {
         return enemySpeedMult;
+    }
+
+    public float GetShootingSpeedLevel()
+    {
+        return shootingSpeedLevel;
+    }
+
+    public void ShootingSpeedLevelUp()
+    {
+        //Debug.Log(shootingSpeedLevel);
+        ++shootingSpeedLevel;
+        if (shootingSpeedLevel > 10) shootingSpeedLevel = 10;
+        UpdateShootingSpeed();
+    }
+
+    private void UpdateShootingSpeed()
+    {
+        speedPowerUpText.text = "Atk Speed:\nLevel " + shootingSpeedLevel + "/10";
+    }
+
+    public float GetShootingSpeedMult()
+    {
+        return shootingSpeedMultiplier[shootingSpeedLevel - 1];
+    }
+
+    public GameObject GetSpeedPowerUp()
+    {
+        return speedPowerUp;
     }
 }

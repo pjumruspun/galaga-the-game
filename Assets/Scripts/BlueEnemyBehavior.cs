@@ -10,10 +10,10 @@ public class BlueEnemyBehavior : MonoBehaviour
 
     // Essential Components
     private CharacterController controller;
-    public GameObject player;
-    public GameObject originalPos;
-    public GameObject spawnLocationLeft;
-    public GameObject spawnLocationRight;
+    private GameObject player;
+    private GameObject originalPos;
+    private GameObject spawnLocationLeft;
+    private GameObject spawnLocationRight;
     private ManagerScript managerScript;
 
     // Constants
@@ -27,14 +27,14 @@ public class BlueEnemyBehavior : MonoBehaviour
     private const float repositionDistance = 0.05f;
 
     // Controlling Variables
-    Vector3 move;
+    private Vector3 move;
 
     // State Variable
-    enum State
+    private enum State
     {
         Idle, Chase, Destroy, Relocation, Reposition
     }
-    State currentState;
+    private State currentState;
 
     // Checking Variable
     private const int ensureRelocation = 60;

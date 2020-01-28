@@ -15,7 +15,7 @@ public class ProjectileBehavior : MonoBehaviour
     private const float lowerBound = -5.2f;
 
     // Controlling Variables
-    Vector2 move;
+    private Vector2 move;
 
     // Start is called before the first frame update
     void Start()

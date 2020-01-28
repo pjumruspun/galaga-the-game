@@ -3,18 +3,22 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GreenEnemyBehavior : MonoBehaviour
+public class GreenEnemyBehavior : EnemyBehavior
 {
     // Adjustable speed
-    public float greenEnemySpeedMultiplier = 1.0f;
+    [SerializeField]
+    private float greenEnemySpeedMultiplier = 1.0f;
 
     // Essential Components
-    private CharacterController controller;
+    
     private ManagerScript managerScript;
-    public GameObject player;
-    public GameObject originalPos;
-    public GameObject spawnLocationLeft;
-    public GameObject spawnLocationRight;
+    private PlayerLife playerLife;
+    private GameObject player;
+    private GameObject originalPos;
+    private GameObject spawnLocationLeft;
+    private GameObject spawnLocationRight;
+    [SerializeField]
+    private GameObject speedPowerUp;
 
     // Constants
     private const float repositionSpeed = 5.0f;
@@ -28,14 +32,14 @@ public class GreenEnemyBehavior : MonoBehaviour
     private const float laserPosAdjustFactor = 3.1f;
 
     // Controlling Variables
-    Vector3 move;
+    private Vector3 move;
 
     // State Variable
-    enum State
+    private enum State
     {
         Idle, Chase, Destroy, Relocation, Reposition, Shooting
     }
-    State currentState;
+    private State currentState;
 
     // Checking Variables
     private const int ensureRelocation = 60;
@@ -66,6 +70,7 @@ public class GreenEnemyBehavior : MonoBehaviour
         isShootingLaser = false;
         currentLaserTime = 0.0f;
         managerScript = GameObject.Find("Game Manager").GetComponent<ManagerScript>();
+        playerLife = GameObject.Find("Game Manager").GetComponent<PlayerLife>();
         this.gameObject.tag = "GreenEnemy";
         controller = GetComponent<CharacterController>();
         currentState = State.Relocation;
@@ -133,21 +138,19 @@ public class GreenEnemyBehavior : MonoBehaviour
         else if (currentState == State.Shooting)
         {
             ResetRotation();
-            if(currentLaserTime < laserTime + timeAfterShooting)
+            if(currentLaserTime < laserTime + timeAfterShooting && !playerLife.IsGameOver())
             {
                 transform.parent = null;
                 float curX = gameObject.transform.position.x;
                 float playerX = 0.0f;
-                try
+
+                if(player != null)
                 {
                     playerX = player.transform.position.x;
                 }
-                catch (MissingReferenceException)
+                else
                 {
                     player = GameObject.FindGameObjectWithTag("Player");
-                }
-                catch (NullReferenceException)
-                {
                     playerX = 0.0f;
                 }
                 move = Vector3.zero;
@@ -223,21 +226,7 @@ public class GreenEnemyBehavior : MonoBehaviour
             playerX = 0.0f;
             ResetRotation();
         }
-        /*
-        try
-        {
-            playerX = player.transform.position.x;
-            diffY = Mathf.Abs(player.transform.position.y - transform.position.y);
-        }
-        catch (MissingReferenceException)
-        {
-            player = GameObject.FindGameObjectWithTag("Player");
-        }
-        catch (NullReferenceException)
-        {
-            player = GameObject.FindGameObjectWithTag("Player");
-            playerX = 0.0f;
-        }*/
+        
 
         if (diffY <= shootingDistanceY)
         {

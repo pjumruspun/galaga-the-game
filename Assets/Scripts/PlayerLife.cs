@@ -6,9 +6,10 @@ using UnityEngine.UI;
 public class PlayerLife : MonoBehaviour
 {
     // Essential components
-    public GameObject player;
-    public GameObject currentPlayerObj;
-    public ManagerScript managerScript;
+    [SerializeField]
+    private GameObject player;
+    private GameObject currentPlayerObj;
+    private ManagerScript managerScript;
 
     // Lives Implementation
     [SerializeField]
@@ -106,23 +107,29 @@ public class PlayerLife : MonoBehaviour
         SetInvulnerable();
         --currentLives;
         UpdateLivesUI();
-        if (currentLives > 0)
+        if (currentLives >= 0)
         {
             CreatePlayerObj();
             //s.sortingOrder = 2;
         }
         else
         {
+            currentLives = 0;
             isGameOver = true;
             GameOver();
             Time.timeScale = 0;
         }
     }
 
-    void GameOver()
+    private void GameOver()
     {
         Debug.Log("GAME OVER!!");
         gameOverText.enabled = true;
+    }
+
+    public bool IsGameOver()
+    {
+        return isGameOver;
     }
 
     public void SetInvulnerable()
