@@ -126,6 +126,7 @@ public class GreenEnemyBehavior : EnemyBehavior
 
                 if(currentLaserTime > timeBeforeShooting && !isShootingLaser && currentLaserTime < laserTime)
                 {
+                    // Debug.Log("Gonna SHOOT");
                     isShootingLaser = true;
                     Shoot(1);
                     isLaserRendererEnabled = true;
@@ -134,6 +135,7 @@ public class GreenEnemyBehavior : EnemyBehavior
                 }
                 if(currentLaserTime > laserTime && isShootingLaser)
                 {
+                    // Debug.Log("STOP");
                     isShootingLaser = false;
                     Destroy(currentLaserObj);
                     currentLaserFrameCount = 0;
@@ -160,6 +162,7 @@ public class GreenEnemyBehavior : EnemyBehavior
             else
             {
                 transform.parent = originalPos.transform;
+                if (transform.parent == null) Debug.Log("THROW ERROR");
                 currentLaserTime = 0.0f;
                 currentState = State.Reposition;
             }

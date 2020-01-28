@@ -24,6 +24,10 @@ public class ManagerScript : MonoBehaviour
     [SerializeField]
     private GameObject greenEnemy;
 
+    // Audio background
+    [SerializeField]
+    private AudioSource music;
+
     // Enemy containers
     private List<GameObject> blueEnemies;
     private List<GameObject> redEnemies;
@@ -76,6 +80,7 @@ public class ManagerScript : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        music = GetComponent<AudioSource>();
         InitializeGame();
     }
 
@@ -401,6 +406,9 @@ public class ManagerScript : MonoBehaviour
 
     private void InitializeGame()
     {
+        music.Play();
+
+        enemySpeedMult = 1.0f;
         level = 0;
         shootingSpeedLevel = 1;
         enemyGroup = GameObject.FindGameObjectWithTag("EnemyGroup");
