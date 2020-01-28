@@ -3,31 +3,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class RedEnemyBehavior : MonoBehaviour
+public class RedEnemyBehavior : EnemyBehavior
 {
     // Adjustable speed
     public float redEnemySpeedMultiplier = 1.0f;
 
-    // Essential Components
-    private CharacterController controller;
-    private ManagerScript managerScript;
-    private GameObject player;
-    private GameObject originalPos;
-    private GameObject spawnLocationLeft;
-    private GameObject spawnLocationRight;
-
     // Constants
-    private const float repositionSpeed = 5.0f;
     private const float verticalSpeed = 3.0f;
-    private const float horizontalSpeed = 1.2f;
-    private const float leftBound = -3.7f;
-    private const float rightBound = 3.7f;
-    private const float upperBound = 5.2f;
-    private const float lowerBound = -6f;
-    private const float repositionDistance = 0.05f;
-
-    // Controlling Variables
-    private Vector3 move;
 
     // State Variable
     private enum State
@@ -35,10 +17,6 @@ public class RedEnemyBehavior : MonoBehaviour
         Idle, Chase, Destroy, Relocation, Reposition
     }
     private State currentState;
-
-    // Checking Variables
-    private const int ensureRelocation = 60;
-    private int relocationCounter = 0;
 
     // Shooting Variables
     [SerializeField]
@@ -68,7 +46,7 @@ public class RedEnemyBehavior : MonoBehaviour
         if (redEnemySpeedMultiplier < 0) redEnemySpeedMultiplier = 0;
     }
 
-    private void HandleState()
+    override protected void HandleState()
     {
         if (currentState == State.Idle)
         {
@@ -117,7 +95,7 @@ public class RedEnemyBehavior : MonoBehaviour
         }
     }
 
-    private void FlyToPlayer()
+    override protected void FlyToPlayer()
     {
 
         float curX = gameObject.transform.position.x;
@@ -156,7 +134,7 @@ public class RedEnemyBehavior : MonoBehaviour
         controller.Move(move * Time.deltaTime);
     }
 
-    private void Reposition()
+    override protected void Reposition()
     {
         Vector2 diff = originalPos.transform.position - transform.position;
         transform.up = diff;
@@ -166,13 +144,7 @@ public class RedEnemyBehavior : MonoBehaviour
         controller.Move(move * Time.deltaTime * repositionSpeed * redEnemySpeedMultiplier);
     }
 
-    private bool IsRepositioned()
-    {
-        float dist = Vector3.Distance(originalPos.transform.position, gameObject.transform.position);
-        return dist < repositionDistance;
-    }
-
-    private void HandleBounds()
+    override protected void HandleBounds()
     {
         Vector3 currentPosition = gameObject.transform.position;
         if (currentPosition.x < leftBound || currentPosition.x > rightBound || currentPosition.y > upperBound || currentPosition.y < lowerBound)
@@ -251,18 +223,8 @@ public class RedEnemyBehavior : MonoBehaviour
         }
     }
 
-    public void ChasePlayer()
+    override public void ChasePlayer()
     {
         currentState = State.Chase;
-    }
-
-    public void LookAtPlayer()
-    {
-        transform.up = player.transform.position - transform.position;
-    }
-
-    public void ResetRotation()
-    {
-        transform.up = Vector3.down;
     }
 }

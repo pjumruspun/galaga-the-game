@@ -13,10 +13,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   redEnemySpeedMultiplier: 1
-  player: {fileID: 0}
-  originalPos: {fileID: 0}
-  spawnLocationLeft: {fileID: 0}
-  spawnLocationRight: {fileID: 0}
   rocket: {fileID: 4444512787877957088, guid: 4b5a306de0e65184b9edb46a2f5273e7, type: 3}
 --- !u!1001 &55766447647389023
 PrefabInstance:

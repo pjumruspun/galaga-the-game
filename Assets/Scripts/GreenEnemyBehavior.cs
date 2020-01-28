@@ -10,29 +10,13 @@ public class GreenEnemyBehavior : EnemyBehavior
     private float greenEnemySpeedMultiplier = 1.0f;
 
     // Essential Components
-    
-    private ManagerScript managerScript;
     private PlayerLife playerLife;
-    private GameObject player;
-    private GameObject originalPos;
-    private GameObject spawnLocationLeft;
-    private GameObject spawnLocationRight;
     [SerializeField]
     private GameObject speedPowerUp;
 
     // Constants
-    private const float repositionSpeed = 5.0f;
-    private const float verticalSpeed = 5.0f;
-    private const float horizontalSpeed = 1.2f;
-    private const float leftBound = -3.7f;
-    private const float rightBound = 3.7f;
-    private const float upperBound = 5.2f;
-    private const float lowerBound = -6f;
-    private const float repositionDistance = 0.05f;
     private const float laserPosAdjustFactor = 3.1f;
-
-    // Controlling Variables
-    private Vector3 move;
+    private const float verticalSpeed = 5.0f;
 
     // State Variable
     private enum State
@@ -40,10 +24,6 @@ public class GreenEnemyBehavior : EnemyBehavior
         Idle, Chase, Destroy, Relocation, Reposition, Shooting
     }
     private State currentState;
-
-    // Checking Variables
-    private const int ensureRelocation = 60;
-    private int relocationCounter = 0;
 
     // Shooting Variables
     [SerializeField]
@@ -88,7 +68,7 @@ public class GreenEnemyBehavior : EnemyBehavior
         if (greenEnemySpeedMultiplier < 0) greenEnemySpeedMultiplier = 0;
     }
 
-    private void HandleState()
+    override protected void HandleState()
     {
         if (currentState == State.Idle)
         {
@@ -113,27 +93,7 @@ public class GreenEnemyBehavior : EnemyBehavior
         }
         else if (currentState == State.Relocation)
         {
-            ResetRotation();
-            int randDir = UnityEngine.Random.Range(0, 2);
-            float dist = 999.0f;
-            if (randDir < 1)
-            {
-                transform.position = spawnLocationLeft.transform.position;
-                dist = Vector3.Distance(spawnLocationLeft.transform.position, transform.position);
-            }
-            else
-            {
-                transform.position = spawnLocationRight.transform.position;
-                dist = Vector3.Distance(spawnLocationRight.transform.position, transform.position);
-            }
-
-            if (dist < 0.05f)
-                ++relocationCounter;
-            if (relocationCounter == ensureRelocation)
-            {
-                currentState = State.Reposition;
-                relocationCounter = 0;
-            }
+            Relocation();
         }
         else if (currentState == State.Shooting)
         {
@@ -207,7 +167,7 @@ public class GreenEnemyBehavior : EnemyBehavior
         }
     }
 
-    private void FlyToPlayer()
+    override protected void FlyToPlayer()
     {
 
         float curX = gameObject.transform.position.x;
@@ -248,7 +208,32 @@ public class GreenEnemyBehavior : EnemyBehavior
         controller.Move(move * Time.deltaTime);
     }
 
-    private void Reposition()
+    private void Relocation()
+    {
+        ResetRotation();
+        int randDir = UnityEngine.Random.Range(0, 2);
+        float dist = 999.0f;
+        if (randDir < 1)
+        {
+            transform.position = spawnLocationLeft.transform.position;
+            dist = Vector3.Distance(spawnLocationLeft.transform.position, transform.position);
+        }
+        else
+        {
+            transform.position = spawnLocationRight.transform.position;
+            dist = Vector3.Distance(spawnLocationRight.transform.position, transform.position);
+        }
+
+        if (dist < 0.05f)
+            ++relocationCounter;
+        if (relocationCounter == ensureRelocation)
+        {
+            currentState = State.Reposition;
+            relocationCounter = 0;
+        }
+    }
+
+    override protected void Reposition()
     {
         Vector2 diff = originalPos.transform.position - transform.position;
         transform.up = diff;
@@ -258,13 +243,7 @@ public class GreenEnemyBehavior : EnemyBehavior
         controller.Move(move * Time.deltaTime * repositionSpeed * greenEnemySpeedMultiplier);
     }
 
-    private bool IsRepositioned()
-    {
-        float dist = Vector3.Distance(originalPos.transform.position, gameObject.transform.position);
-        return dist < repositionDistance;
-    }
-
-    private void HandleBounds()
+    override protected void HandleBounds()
     {
         Vector3 currentPosition = gameObject.transform.position;
         if (currentPosition.x < leftBound || currentPosition.x > rightBound || currentPosition.y > upperBound || currentPosition.y < lowerBound)
@@ -289,19 +268,9 @@ public class GreenEnemyBehavior : EnemyBehavior
         }
     }
 
-    public void ChasePlayer()
+    override public void ChasePlayer()
     {
         currentState = State.Chase;
-    }
-
-    public void LookAtPlayer()
-    {
-        transform.up = player.transform.position - transform.position;
-    }
-
-    public void ResetRotation()
-    {
-        transform.up = Vector3.down;
     }
 
     public GameObject GetOriginalPosGameObject()

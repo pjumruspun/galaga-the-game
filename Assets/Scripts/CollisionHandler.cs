@@ -147,6 +147,6 @@ public class CollisionHandler : MonoBehaviour
 
     private static int GetRandFloat()
     {
-        return Random.RandomRange(0, 100);
+        return Random.Range(0, 100);
     }
 }
