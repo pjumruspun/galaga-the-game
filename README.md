@@ -42,11 +42,3 @@ Survive and gain as much point as possible with 3 available lives
 
 - Type in the new value in `Enemy Speed Mult` text field under the script `Manager Script` in the Inspector window.
 - **Please note** that the maximum speed multiplier handled is `2.5`; increasing the speed more than 2.5 might cause unexpected behaviors.
-
-## Disclaimers
-
-I **do not** own any of the audio used in the game. All audios are used with **non-commercial purposes**.
-
-Background Music `Insatiable 8-bit` covers belongs to [Jack Reynard](https://www.youtube.com/watch?v=1imbLyuweec). The original song by Masayoshi Soken, composed for the game [Final Fantasy XIV: Shadowbringers](https://www.finalfantasyxiv.com/).
-
-Shooting SFX by [LittleRobotSoundFactory](https://freesound.org/people/LittleRobotSoundFactory/packs/16681/).
