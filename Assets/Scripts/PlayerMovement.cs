@@ -8,7 +8,7 @@ public class PlayerMovement : MonoBehaviour
     private CharacterController controller;
     [SerializeField]
     private GameObject projectile;
-    private AudioSource pewSound;
+    // private AudioSource pewSound;
     private ManagerScript managerScript;
 
     // Constants
@@ -26,7 +26,7 @@ public class PlayerMovement : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        pewSound = GetComponent<AudioSource>();
+        // pewSound = GetComponent<AudioSource>();
         managerScript = GameObject.FindGameObjectWithTag("GameManager").GetComponent<ManagerScript>();
         currentShootingCooldown = 0.0f;
         controller = GetComponent<CharacterController>();
@@ -59,7 +59,7 @@ public class PlayerMovement : MonoBehaviour
         if (Input.GetKey(KeyCode.Space) && currentShootingCooldown > shootingCooldown / managerScript.GetShootingSpeedMult())
         {
             Instantiate(projectile, gameObject.transform.position, Quaternion.identity);
-            if (pewSound != null) pewSound.PlayOneShot(pewSound.clip);
+            //if (pewSound != null) pewSound.PlayOneShot(pewSound.clip);
             currentShootingCooldown = 0.0f;
         }
         if(currentShootingCooldown < shootingCooldown)
@@ -68,6 +68,6 @@ public class PlayerMovement : MonoBehaviour
 
     private void OnDestroy()
     {
-        pewSound = null;
+        //pewSound = null;
     }
 }
