@@ -4,7 +4,7 @@ A basic spaceship shooting game implemented **without** using any third party to
 
 Created with **Unity 2019.2.18f1 Personal, DirectX11**
 
-Development build designed to work on Windows 10 x64
+[Development build](https://drive.google.com/open?id=1eL3bxXjxDTzEn2sGEPvVWtixQy1rnRpL) designed to work on Windows 10 x64
 
 ## Goals
 
